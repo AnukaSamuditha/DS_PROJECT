@@ -38,7 +38,7 @@ const authorize = (roles = []) => {
         });
       }
 
-      const decoded = jwt.decode(token, JWT_SECRET);
+      const decoded = jwt.verify(token, JWT_SECRET);
       req.user = decoded;
 
       if (!roles.includes(req.user.user.role)) {
