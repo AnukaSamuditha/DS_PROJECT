@@ -2,8 +2,10 @@ import { DotBackgroundDemo } from "./components/magicui/dot-pattern";
 import Lottie from "lottie-react";
 import scooterMan from "./assets/scooter-person.json";
 import { AnimatedGradientTextDemo } from "./components/magicui/gradient-button";
+import { useAuth } from "./Providers/AuthProvider";
 
 export default function Home() {
+  const {user} = useAuth();
   return (
     <section className="w-full h-auto flex flex-col bg-black justify-center items-center">
       <div className="w-[80%] h-full absolute opacity-30">
