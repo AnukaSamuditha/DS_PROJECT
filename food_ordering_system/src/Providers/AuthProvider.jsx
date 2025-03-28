@@ -4,16 +4,18 @@ export const AuthContext = createContext();
 
 export default function AuthProvider({children}){
     
-    const [user,setUser] = useState(null);
+    const [user,setUser] = useState(JSON.parse(localStorage.getItem('user')));
 
     const login = async(userInfo,token)=>{
         setUser(userInfo);
         localStorage.setItem("token",token);
+        localStorage.setItem("user",JSON.stringify(userInfo))
     }
     
     const logout = async()=>{
         setUser(null);
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
     }
 
     return(

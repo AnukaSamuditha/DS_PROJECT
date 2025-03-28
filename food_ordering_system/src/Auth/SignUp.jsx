@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@/Providers/AuthProvider";
+import { useNavigate } from "react-router";
 
 const schema = z.object({
   username: z
@@ -18,6 +19,9 @@ const schema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters")
     .max(16, "Password cannot be more than 16 characters"),
+    role:z.enum(["regular","driver",],{
+        message:"Role must be provided"
+    })
 });
 
 export default function SignUp() {
@@ -29,6 +33,7 @@ export default function SignUp() {
   } = useForm({ resolver: zodResolver(schema), mode: "onChange" });
 
   const {login} = useAuth();
+  const navigate = useNavigate();
 
   const { mutate } = useMutation({
     mutationFn: async (data) => {
@@ -42,6 +47,7 @@ export default function SignUp() {
       console.log("User has been created sucessfully", res);
       login(res.data.user,res.data.token);
       reset();
+      navigate('/delivery');
     },
     onError: (error) => {
       console.log("Error in creating the user", error);
@@ -104,15 +110,15 @@ export default function SignUp() {
           <Label name="type" title="Sign Up as" />
           <br />
           <select
+            {...register("role")}
             type="text"
-            name="role"
             className=" bg-transparent w-[60%] rounded-[8px] h-full text-zinc-300 text-sm placeholder-zinc-400 focus:border-none border border-zinc-800 text-center"
           >
             <option value="regular" className="text-white bg-black">
               Regular
             </option>
-            <option value="rider" className="text-white bg-black">
-              Rider
+            <option value="driver" className="text-white bg-black">
+              Driver
             </option>
           </select>
         </div>

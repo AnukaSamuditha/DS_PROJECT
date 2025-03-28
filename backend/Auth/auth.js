@@ -42,6 +42,7 @@ const authorize = (roles = []) => {
       req.user = decoded;
 
       if (!roles.includes(req.user.user.role)) {
+        console.log("role ",req.user.user.role)
         return res.status(401).json({
           message: "Access Denied, no permission to access the resource",
         });
