@@ -3,7 +3,7 @@ const router = express.Router();
 const { createUser,loginUser,userInfo,getAllUsers, deleteUsers } = require("../Controllers/userController");
 const {authenticate,authorize} = require('../Auth/auth');
 
-router.post("/create-user", createUser);
+router.post("/", createUser);
 router.get("/get-user",authenticate,userInfo)
 router.post("/login",loginUser);
 // router.post("/logout",authenticate,logoutUser);

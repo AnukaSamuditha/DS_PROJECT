@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@/Providers/AuthProvider";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
@@ -27,20 +27,24 @@ export default function SignIn() {
 
   const {login} = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectedFrom = location.state || undefined;
 
   const { mutate,error } = useMutation({
     mutationFn: async (data) => {
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_PREFIX}/users/login`,
-        data
+        data,{
+          withCredentials:true
+        }
       );
-      return res;
+      return res.data;
     },
     onSuccess: (res) => {
       console.log("User were logged in sucessfully", res);
-      login(res.data.user,res.data.token);
+      login(res.data);
       reset();
-      navigate("/");
+      redirectedFrom ? navigate(redirectedFrom) : navigate("/");
       
     },
     onError: (error) => {
@@ -57,13 +61,13 @@ export default function SignIn() {
     console.log(error.message)
   }
   return (
-    <div className="w-full h-screen flex justify-center items-center">
+    <div className="w-full h-screen flex justify-center items-center bg-white">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-lg:w-[90%] lg:w-[30%] h-auto flex flex-col mt-20 gap-4 rounded-xl border border-zinc-800 px-5 py-5"
+        className="w-full max-lg:w-[90%] lg:w-[30%] h-auto flex flex-col mt-20 gap-4 rounded-xl border border-[#E5E5E5] px-5 py-5"
       >
         <div className="flex flex-col">
-          <h5 className="text-white text-2xl font-medium text-left mb-1">
+          <h5 className="text-black text-2xl font-semibold text-left mb-1">
             SignIn
           </h5>
           <h5 className="text-zinc-400 text-sm mb-3">
@@ -98,7 +102,7 @@ export default function SignIn() {
           isSubmitting={isSubmitting}
           isValid={isValid}
         />
-        <p className="text-sm text-center text-white">
+        <p className="text-sm text-center text-black">
           Don't have an account? <span className="underline">Create one</span>
         </p>
       </form>
