@@ -45,9 +45,10 @@ export default function SignUp() {
     },
     onSuccess: (res) => {
       console.log("User has been created sucessfully", res);
-      login(res.data.user,res.data.token);
+      console.log(res.data.user)
+      login(res.data.user);
       reset();
-      navigate('/delivery');
+      navigate('/signin');
     },
     onError: (error) => {
       console.log("Error in creating the user", error);
@@ -59,13 +60,13 @@ export default function SignUp() {
     mutate(formData);
   };
   return (
-    <div className="w-full h-screen flex justify-center items-center">
+    <div className="w-full h-screen flex justify-center items-center bg-white ">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-lg:w-[90%] lg:w-[30%] h-auto flex flex-col mt-20 gap-4 rounded-xl border border-zinc-800 px-5 py-5"
+        className="w-full max-lg:w-[90%] lg:w-[30%] h-auto flex flex-col mt-20 gap-4 rounded-xl border border-[#E5E5E5] px-5 py-5 mb-20"
       >
         <div className="flex flex-col">
-          <h5 className="text-white text-2xl font-medium text-left mb-1">
+          <h5 className="text-black text-2xl font-semibold text-left mb-1">
             Signup
           </h5>
           <h5 className="text-zinc-400 text-sm mb-3">
@@ -128,7 +129,7 @@ export default function SignUp() {
           isSubmitting={isSubmitting}
           isValid={isValid}
         />
-        <p className="text-sm text-center text-white">
+        <p className="text-sm text-center text-black">
           Already have an account? <span className="underline">Log in</span>
         </p>
       </form>

@@ -15,11 +15,26 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    role:{
-      type:String,
-      required:true,
-      default:'regular',
-      enum:['regular','admin','driver']
+    role: {
+      type: String,
+      required: true,
+      default: "regular",
+      enum: ["regular", "admin", "driver"],
+    },
+    isDelivering: {
+      type: Boolean,
+      default: function () {
+        return this.role === "driver" ? false : undefined;
+      },
+      validate: {
+        validator: function (value) {
+          if (this.role === "driver") {
+            return value === true || value === false;
+          }
+          return value === undefined;
+        },
+        message: "isDelivering value must be available",
+      },
     },
   },
   { timestamps: true }

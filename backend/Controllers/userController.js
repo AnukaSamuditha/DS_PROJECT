@@ -16,15 +16,14 @@ exports.createUser = async (req, res) => {
     }
     let newUser;
 
-    if(role){
+    if (role) {
       newUser = new User({
         username,
         email,
         password,
-        role
+        role,
       });
-
-    }else{
+    } else {
       newUser = new User({
         username,
         email,
@@ -47,13 +46,19 @@ exports.createUser = async (req, res) => {
 
       const { password, ...userWithoutPassword } = newUser._doc;
 
-      jwt.sign(payLoad, JWT_SECRET, { expiresIn: "1 days" }, (err, token) => {
+      jwt.sign(payLoad, JWT_SECRET, { expiresIn: "1d" }, (err, token) => {
         if (err) {
           res.status(500).json({
             message: "Error creating jwt token",
             error: err.message,
           });
         }
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "strict",
+          maxAge: 1000 * 60 * 60 * 24,
+        });
         res.status(201).json({
           message: "user registered successfully",
           user: userWithoutPassword,
@@ -99,16 +104,29 @@ exports.loginUser = async (req, res) => {
       },
     };
 
-    jwt.sign(payLoad, JWT_SECRET, { expiresIn: "1 day" }, (error, token) => {
+    jwt.sign(payLoad, JWT_SECRET, { expiresIn: "1h" }, (error, token) => {
       if (error) {
         return res.status(500).json({
           message: "Error creating jwt token",
           error: error.message,
         });
       }
-      res.status(201).json({
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+        maxAge: 3600000,
+      });
+
+      res.status(200).json({
         message: "User logged in successfully",
         token,
+        data: {
+          id: user._id,
+          email: user.email,
+          role: user.role,
+        },
       });
     });
   } catch (error) {
@@ -119,40 +137,44 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-// exports.logoutUser = async (req, res) => {
-//   try {
-//     const token = req.header("Authorization")?.split(" ")[1];
-//     if (!token) {
-//       return res.status(401).json({
-//         message: "No token available, authorization denied",
-//       });
-//     }
+exports.logoutUser = async (req, res) => {
+  try {
+    //const token = req.header("Authorization")?.split(" ")[1];
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({
+        message: "No token available, authorization denied",
+      });
+    }
 
-//     const decodedToken = jwt.verify(token, JWT_SECRET);
-//     const remainingExpiry = decodedToken.exp - Math.floor(Date.now() / 1000);
+    const decodedToken = jwt.verify(token, JWT_SECRET);
+    const remainingExpiry = decodedToken.exp - Math.floor(Date.now() / 1000);
 
-//     await redisClient.set(token, "blacklisted", { EX: remainingExpiry });
-
-//     res.status(200).json({
-//       message: "User logged out successfully",
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       message: "Error in log out handling",
-//       error: error.message,
-//     });
-//   }
-// };
+    // await redisClient.set(token, "blacklisted", { EX: remainingExpiry });
+    res.clearCookie("token");
+    res.status(200).json({
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error in log out handling",
+      error: error.message,
+    });
+  }
+};
 
 exports.userInfo = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const token = req.cookies.token;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    const user = await User.findById(decoded.user.id).select("-password");
     if (!user) {
       return res.status(404).json({
         message: "Invalid user id",
       });
     }
-    user.password = null;
+    
     res.status(200).json({
       user,
     });
@@ -164,50 +186,48 @@ exports.userInfo = async (req, res) => {
   }
 };
 
-exports.getAllUsers = async(req,res)=>{
-    try{
-      const allUsers = await User.find({});
+exports.getAllUsers = async (req, res) => {
+  try {
+    const allUsers = await User.find({});
 
-      if(allUsers.length===0){
-        res.status(400).json({
-          message:"No users to fetch"
-        })
-      }
-
-      res.status(200).json({
-        message:"Fetched all the users",
-        data:allUsers
-      })
-
-    }catch(error){
-      res.status(500).json({
-        message:"Error in fetching all users",
-        error:error.message
-      })
+    if (allUsers.length === 0) {
+      res.status(400).json({
+        message: "No users to fetch",
+      });
     }
-}
 
-exports.deleteUsers = async(req,res)=>{
-  
+    res.status(200).json({
+      message: "Fetched all the users",
+      data: allUsers,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error in fetching all users",
+      error: error.message,
+    });
+  }
+};
+
+exports.deleteUsers = async (req, res) => {
   const { id } = req.params;
-  
-    try {
-      const deletedUser = await User.findByIdAndDelete(id);
-  
-      if (!deletedUser) {
-        return res.status(404).json({
-          message: "User not found",
-        });
-      }
-  
-      res.status(200).json({
-        message: "User was deleted successfully.",
-        deletedUser,
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: "Error deleting the user.",
-        error: error.message,
+
+  try {
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({
+        message: "User not found",
       });
     }
-}
+
+    res.status(200).json({
+      message: "User was deleted successfully.",
+      deletedUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error deleting the user.",
+      error: error.message,
+    });
+  }
+};

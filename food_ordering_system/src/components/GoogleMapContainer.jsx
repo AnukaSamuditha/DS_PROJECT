@@ -9,6 +9,7 @@ import {
 } from "@react-google-maps/api";
 import ScootyMarker from '../assets/scooty_marker.png';
 import ProfilePicture from '../assets/profile_dummy.jpg';
+import { LocationMarker } from "./ui/LocationMarker";
 
 const containerStyle = {
   width: "100%",
@@ -32,11 +33,12 @@ const destination = {
   lng: 79.8612,
 };
 
-export default function GoogleMapContainer({riders,isRiderMap}) {
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_API,
-  });
+export default function GoogleMapContainer({riders,isRiderMap,isLoaded}) {
+  
+  // const { isLoaded } = useJsApiLoader({
+  //   id: "google-map-script",
+  //   googleMapsApiKey: import.meta.env.VITE_GOOGLE_API,
+  // });
 
   const [map, setMap] = React.useState(null);
   const [directionRoutePoints, setDirectionRoutePoints] = React.useState(null);
@@ -59,6 +61,7 @@ export default function GoogleMapContainer({riders,isRiderMap}) {
       getRoute();
     }
   }, [isLoaded, source, destination]);
+
 
   const getRoute = () => {
     if (!isLoaded || !window.google || !window.google.maps) return;
@@ -122,15 +125,16 @@ export default function GoogleMapContainer({riders,isRiderMap}) {
       </MarkerF> */}
 
       {isRiderMap && riders.map((driver) => (
-        <MarkerF key={driver.riderId} position={{ lat: driver.lat, lng: driver.lng }} icon={ScootyMarker}>
+        <MarkerF key={driver.riderId} position={{ lat: Number(driver.lat), lng: Number(driver.lng) }}>
           <OverlayViewF
-            position={{ lat: driver.lat, lng: driver.lng }}
+            position={{ lat: Number(driver.lat), lng: Number(driver.lng) }}
             mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
           >
-            <div className="bg-black w-[120px] h-[40px]  rounded-full flex justify-start items-center px-1.5 py-1.5 gap-2">
+            <LocationMarker/>
+            {/* <div className="bg-black w-auto max-w-[120px] h-[40px]  rounded-full flex justify-start items-center px-1.5 py-1.5 gap-2 pr-3">
               <img src={ProfilePicture} className="w-[30px] h-[30px] rounded-full"/>
-              <h1 className="text-xs text-white font-semibold tracking-tight">{driver.riderName}</h1>
-            </div>
+              <h1 className="text-xs text-white font-semibold tracking-tight max-w-[120px] truncate overflow-hidden whitespace-nowrap">{driver.riderName}</h1>
+            </div> */}
           </OverlayViewF>
         </MarkerF>
       ))}

@@ -1,9 +1,12 @@
 const jwt = require("jsonwebtoken");
+const cookieParser = require('cookie-parser');
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const authenticate = async (req, res, next) => {
-  const token = await req.headers.authorization?.split(" ")[1];
 
+const authenticate = async (req, res, next) => {
+  //const token = await req.headers.authorization?.split(" ")[1];
+  const token = req.cookies.token;
+  
   if (!token) {
     return res.status(401).json({
       message: "No token available, authorization denied",
@@ -31,7 +34,8 @@ const authenticate = async (req, res, next) => {
 const authorize = (roles = []) => {
   return (req, res, next) => {
     try {
-      const token = req.headers.authorization?.split(" ")[1];
+      //const token = req.headers.authorization?.split(" ")[1];
+      const token = req.cookies.token;
       if (!token) {
         return res.status(401).json({
           message: "Access Denied, no token provided",
@@ -41,8 +45,8 @@ const authorize = (roles = []) => {
       const decoded = jwt.verify(token, JWT_SECRET);
       req.user = decoded;
 
-      if (!roles.includes(req.user.user.role)) {
-        console.log("role ",req.user.user.role)
+      if (!roles.includes(decoded.user?.role)) {
+        console.log("role ",decoded.user?.role)
         return res.status(401).json({
           message: "Access Denied, no permission to access the resource",
         });

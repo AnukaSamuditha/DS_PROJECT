@@ -9,18 +9,23 @@ const http = require('http');
 const server = http.createServer(app);
 const {socketHandler} = require('./Socket/socketHandler');
 const deliveryRoutes = require('./Routes/deliveryRoutes');
+const cookieParser = require('cookie-parser');
 require("dotenv").config();
 
-
+app.use(cors({
+  origin:process.env.FRONTEND_PREFIX,
+  credentials:true
+}));
+app.use(cookieParser());
 app.use(express.json());
-app.use(cors());
 app.use("/users",userRoutes);
 app.use("/delivers",deliveryRoutes);
 
 const io = new Server(server,{
   cors:{
     origin:process.env.FRONTEND_PREFIX,
-    methods:["GET","POST"]
+    methods:["GET","POST"],
+    credentials:true
   }
 })
 
