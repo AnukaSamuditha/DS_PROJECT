@@ -29,9 +29,9 @@ const locationSchema = new mongoose.Schema({
 
     amount: { type: Number, required: true },
 
-    deliveryFee: { type: Number, required: true },
+    deliveryFee: { type: Number, required: false },
 
-    totalAmount: { type: Number, required: true },
+    totalAmount: { type: Number, required: false },
     
     status: {
       type: String,
@@ -45,11 +45,7 @@ const locationSchema = new mongoose.Schema({
       enum: ['cash_on_delivery', 'card', 'online'],
       required: true
     },
-    driver: {
-      id: String,
-      name: String,
-      phone: String
-    },
+    
     notes: String
   });
   
