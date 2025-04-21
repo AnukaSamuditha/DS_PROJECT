@@ -6,7 +6,7 @@ export default function NavBar(){
             <ul className="w-full flex justify-center items-center gap-10 font-semibold text-white text-sm">
                 <li><NavLink>Home</NavLink></li>
                 <li><NavLink>Restaurants</NavLink></li>
-                <li><NavLink>Food</NavLink></li>
+                <li><NavLink to='/place-order'>Food</NavLink></li>
                 <li><NavLink>Contact</NavLink></li>
             </ul>
         </header>
