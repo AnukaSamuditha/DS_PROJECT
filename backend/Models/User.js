@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
       type:String,
       required:true,
       default:'regular',
-      enum:['regular','admin','rider']
+      enum:['regular','admin','rider','restaurantOwner']
     },
   },
   { timestamps: true }

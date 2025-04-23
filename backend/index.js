@@ -4,10 +4,16 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const userRoutes = require("./Routes/userRoutes");
 require("dotenv").config();
-
+const restaurantRoutes = require("./Routes/RestaurantRoutes");
+const menuItemRoutes = require("./Routes/MenuItemRoutes");
+const reviewRoutes = require("./Routes/reviewRoutes");
 app.use(express.json());
 app.use(cors());
 app.use("/users",userRoutes);
+app.use("/restaurants", restaurantRoutes);
+app.use("/MenuItems", menuItemRoutes);
+app.use('/uploads', express.static('uploads'));
+app.use("/reviews", reviewRoutes);
 
 mongoose
   .connect(process.env.DB_URL)
@@ -20,3 +26,5 @@ mongoose
   .catch((error) => {
     console.log("Error connecting with the database", error);
   });
+
+
