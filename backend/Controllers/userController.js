@@ -104,7 +104,7 @@ exports.loginUser = async (req, res) => {
       },
     };
 
-    jwt.sign(payLoad, JWT_SECRET, { expiresIn: "1h" }, (error, token) => {
+    jwt.sign(payLoad, JWT_SECRET, { expiresIn: "1d" }, (error, token) => {
       if (error) {
         return res.status(500).json({
           message: "Error creating jwt token",
@@ -116,7 +116,7 @@ exports.loginUser = async (req, res) => {
         httpOnly: true,
         secure: false,
         sameSite: "strict",
-        maxAge: 3600000,
+        maxAge: 1000 * 60 * 60 * 24,
       });
 
       res.status(200).json({
@@ -231,3 +231,34 @@ exports.deleteUsers = async (req, res) => {
     });
   }
 };
+
+exports.getUser = async(req,res)=>{
+  const {id} = req.params;
+  console.log("User id received ",id)
+  try{
+    if(!id){
+      return res.status(400).json({
+        message:"Missing required information"
+      })
+    }
+
+    const user = await User.findById(id).select("-password");
+
+    if(!user){
+      return res.status(404).json({
+        message:"User not found!"
+      })
+    }
+
+    return res.status(200).json({
+      message:"User data fetched successfully",
+      user
+    })
+
+  }catch(error){
+    res.status(500).json({
+      message:"Internal server error!",
+      error:error.message
+    })
+  }
+}

@@ -1,38 +1,197 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/Providers/AuthProvider";
-import { redirect, useLocation } from "react-router";
+import { useLocation } from "react-router";
 import { socket } from "../Socket/socket";
 import GoogleMapContainer from "./GoogleMapContainer";
 import { CircleArrowLeft, ArrowRightCircle } from "lucide-react";
 import ProfilePicture from "../assets/profile_dummy.jpg";
-import Timeline from "./TimeLine";
 import { Skeleton } from "./ui/skeleton";
 import OrderTimeline from "./OrderTimeline";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import OrderProcess, { RiderTab } from "./ui/OrderProcess";
 
 export default function OrderStatus({ isLoaded }) {
   const { user } = useAuth();
   const location = useLocation();
-  const order = location.state.order || {};
+  const order = location.state || {};
   const [isOrderlive, setOrderLive] = useState(false);
   const [distanceInKm, setDistanceInKm] = useState(null);
   const [deliveryCost, setDeliveryCost] = useState(null);
+  const [acceptedRiderId, setAcceptedRiderId] = useState(null);
+  const [acceptedRiderLocation, setRiderLocation] = useState(null);
+  const [orderStatus, setOrderStatus] = useState(null);
+  const isLoadedAcceptedRider = useRef(false);
+  const accRiderIdRef = useRef(null);
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!isOrderlive) {
       return;
     }
 
-    const updatedOrder = {
-      ...order,
-      deliveryFee: deliveryCost,
+    // const updatedOrder = {
+    //   ...order,
+    //   deliveryFee: deliveryCost,
+    //   distanceFromShopToUser:distanceInKm
+    // };
+
+    // socket.emit("order_delivery_request", {
+    //   orderId: order._id,
+    //   order: updatedOrder,
+    //   user: order.user,
+    // });
+
+    orderUpdateMutation.mutate();
+  }, [isOrderlive]);
+
+  useEffect(() => {
+    if (!isOrderlive) {
+      return;
+    }
+
+    const handleDeliveryRequestAccept = (data) => {
+      //console.log("accepted rider id ", data.riderId);
+      // orderRiderMutation.mutate();
+      if (!isLoadedAcceptedRider.current) {
+        if (data.riderId) {
+          accRiderIdRef.current = data.riderId
+          setAcceptedRiderId(data.riderId);
+          orderStatusMutation.mutate();
+          isLoadedAcceptedRider.current = true;
+        }
+      }
     };
 
-    socket.emit("order_delivery_request", {
-      orderId: order._id,
-      order: updatedOrder,
-      user: order.user,
-    });
+    const handleRiderArrival = (data)=>{
+
+    }
+    socket.on("order_accepted", handleDeliveryRequestAccept);
+
+    socket.on("rider_arrived",handleRiderArrival);
+
+    return () => {
+      socket.off("order_accepted", handleDeliveryRequestAccept);
+    };
   }, [isOrderlive]);
+
+
+  useEffect(()=>{
+    if(acceptedRiderId){
+      orderRiderMutation.mutate()
+    }
+  },[acceptedRiderId])
+
+  const {
+    data: acceptedRiderInfo,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: ["accepted_rider", acceptedRiderId],
+    queryFn: async () => {
+      console.log("accepted rider query runs..");
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_PREFIX}/users/${acceptedRiderId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("fetch acc user data ", res.data);
+      return res.data.user;
+    },
+    keepPreviousData: true,
+    enabled: !!acceptedRiderId,
+  });
+
+  const orderUpdateMutation = useMutation({
+    mutationFn: async () => {
+      if (!order) {
+        console.log("Order is not available!");
+        return;
+      }
+      const res = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/${order._id}`,
+        {
+          deliveryFee: deliveryCost,
+          totalAmount: deliveryCost + order.amount,
+          distanceFromShopToUser: distanceInKm,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      return res.data;
+    },
+    onSuccess: (data) => {
+      socket.emit("order_delivery_request", {
+        orderId: order._id,
+        order: data.order,
+        user: order.user,
+      });
+    },
+    onError: (error) => {
+      console.log("Error updating the order! ", error.message);
+    },
+  });
+
+  const orderRiderMutation = useMutation({
+    mutationFn: async () => {
+      if (!acceptedRiderId) {
+        console.log("Accepted rider id is not available!");
+        return;
+      }
+      console.log("order rider mutation called")
+      const res = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/${order._id}`,
+        {
+          driverId: acceptedRiderId
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      return res.data;
+    },
+    onSuccess: (data) => {
+      console.log("Order driver id updated successfully",data)
+    },
+    onError: (error) => {
+      console.log("Error updating the order driver id! ", error.message);
+    },
+  });
+
+  const orderStatusMutation = useMutation({
+    mutationFn: async () => {
+      if (!order) {
+        console.log("Order is not available!");
+        return;
+      }
+      const res = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/${order._id}`,
+        {
+          status: "order_accepted",
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      return res.data;
+    },
+    onSuccess: (data) => {
+      //queryClient.invalidateQueries(["order_status", order._id]);
+      setOrderStatus(data.order.status);
+    },
+    onError: (error) => {
+      console.log(
+        "Error occured while updating the order status! ",
+        error.message
+      );
+    },
+  });
 
   const calculateDistance = (order) => {
     return new Promise((resolve, reject) => {
@@ -99,9 +258,46 @@ export default function OrderStatus({ isLoaded }) {
     }
   }, [distanceInKm]);
 
+  const { data: currentOrderStatus, isFetched } = useQuery({
+    queryKey: ["order_status", order?._id],
+
+    queryFn: async () => {
+      if (!order._id) {
+        console.log("Order id is undefined!");
+        return;
+      }
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/status/${order._id}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (!res.data) {
+        console.log("order not found!");
+        return;
+      }
+      console.log("status A - OS ", res.data.status.status);
+      return res.data.status.status;
+    },
+    enabled: !!order?._id,
+    retryOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
+  if (currentOrderStatus) {
+    console.log("order status from order status main", currentOrderStatus);
+  }
+
+  if (acceptedRiderLocation) {
+    console.log("accepted rider location....", acceptedRiderLocation);
+  }
+
+  console.log("Accepted Rider Infor. from order status ", accRiderIdRef.current);
+
   return (
-    <section className="w-full h-auto flex justify-center items-center p-[16px] gap-5 bg-white">
-      <div className="w-1/2 h-full justify-center items-center">
+    <section className="w-full h-auto flex flex-col lg:flex-row justify-center items-start p-[16px] gap-5 bg-white">
+      <div className="w-full lg:w-1/2 h-full justify-center items-center">
         <div className="w-full h-[4rem] flex justify-between items-start">
           <CircleArrowLeft color="black" size={20} className="cursor-pointer" />
           <div className="w-auto h-auto flex justify-center items-center gap-3">
@@ -116,21 +312,30 @@ export default function OrderStatus({ isLoaded }) {
           </div>
         </div>
         <div className="w-full h-auto flex flex-col justify-start items-center">
-          <div className="w-full h-[30%] rounded-xl bg-[#F7F7F7] flex flex-col justify-start items-start p-[16px]">
+          <div className="w-full h-auto rounded-xl bg-[#F7F7F7] flex flex-col justify-start items-start p-[16px]">
             <div className="w-full h-auto flex justify-between items-center">
               <h5 className="text-md font-bold text-zinc-800 tracking-tight">
                 Order :{" "}
                 {order ? (
                   <span className="font-normal">#{order._id}</span>
                 ) : (
-                  <Skeleton className="w-[70px] h-[20px] rounded-full border border-green-800" />
+                  <Skeleton className="w-[70px] h-[20px] rounded-full" />
                 )}
               </h5>
-              <div className="w-[105px] h-[33px] rounded-full text-center flex justify-center items-center bg-blue-500 text-white text-sm font-medium tracking-tight">
-                {order.status}
+              <div className="w-auto h-[33px] px-4 py-2 rounded-full text-center flex justify-center items-center bg-blue-500 text-white text-sm font-medium tracking-tight">
+                {isFetched &&
+                  currentOrderStatus === "order_accepted" &&
+                  "Accepted"}
+                {isFetched && currentOrderStatus === "pending" && "Pending"}
+                {isFetched && currentOrderStatus === "picked" && "Picked"}
               </div>
             </div>
-            {/* <Timeline/> */}
+            <OrderProcess isOrderLive={isOrderlive} orderId={order ? order._id : null} />
+            {currentOrderStatus &&
+              currentOrderStatus === "order_accepted" &&
+              acceptedRiderInfo && (
+                <RiderTab riderName={acceptedRiderInfo.username} />
+              )}
             <OrderTimeline
               deliveryCost={deliveryCost}
               distanceInKm={distanceInKm}
@@ -153,8 +358,15 @@ export default function OrderStatus({ isLoaded }) {
           </div>
         </div>
       </div>
-      <div className="w-1/2 h-full flex justify-center items-center">
-        <GoogleMapContainer isLoaded={isLoaded} isRiderMap={false} />
+      <div className="w-full lg:w-1/2 h-auto flex justify-start items-start ">
+        <GoogleMapContainer
+          isLoaded={isLoaded}
+          isRiderMap={false}
+          userLocation={order.user}
+          order={order}
+          acceptedRiderId={acceptedRiderId}
+          isTracking={isOrderlive}
+        />
       </div>
     </section>
   );

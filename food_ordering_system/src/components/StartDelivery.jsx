@@ -1,29 +1,40 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useAuth } from "@/Providers/AuthProvider";
-import { data, redirect } from "react-router";
 import { socket } from "../Socket/socket";
 import GoogleMapContainer from "./GoogleMapContainer";
-import { CircleArrowLeft, Clock, Handshake, Map, Navigation, Package } from "lucide-react";
+import {
+  CircleArrowLeft,
+  Clock,
+  Handshake,
+  Navigation,
+  Package,
+  LandPlot,
+  MapPin,
+  Truck,
+} from "lucide-react";
 import ProfilePicture from "../assets/profile_dummy.jpg";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Skeleton } from "./ui/skeleton";
 import EmptyBox from "@/assets/empty-box.png";
 import AlertDialogPopup from "./ui/AlertDialog";
+import Order from "./ui/Order";
 
-
-export default function StartDelivery({isLoaded}) {
+export default function StartDelivery({ isLoaded }) {
   const { user, isLoading } = useAuth();
   const [location, setLocation] = useState({ lng: null, lat: null });
+  const [updatedLocation, setUpdatedLocation] = useState(null);
   const [isTracking, setIsTracking] = useState(user.user.isDelivering);
   const [riders, setRiders] = useState([]);
-  const [showDeliveryPopup,setShowDelivery] = useState(false);
+  const [showDeliveryPopup, setShowDelivery] = useState(false);
+  const [order, setOrder] = useState(null);
+  const [orderStatus, setOrderStatus] = useState(null);
+  const [isPicked, setIsPicked] = useState(false);
 
   const watchIdRef = useRef(null);
   const intervalIdRef = useRef(null);
   const locationRef = useRef(location);
-  const orderRef = useRef(null);
-  const queryClient = useQueryClient();
+  const riderId = useMemo(() => user?.user?._id, [user]);
 
   useEffect(() => {
     console.log("AuthProvider - isLoading updated:", isLoading);
@@ -32,8 +43,11 @@ export default function StartDelivery({isLoaded}) {
 
   useEffect(() => {
     if (
-      locationRef.current.lat !== location.lat ||
-      locationRef.current.lng !== location.lng
+      location &&
+      location.lat &&
+      location.lng
+      // locationRef.current.lat !== location.lat ||
+      // locationRef.current.lng !== location.lng
     ) {
       locationRef.current = location;
     }
@@ -54,25 +68,82 @@ export default function StartDelivery({isLoaded}) {
   }, [isTracking]);
 
   //This is for handling getting delivery requests
-  useEffect(()=>{
-    if(!isTracking) return;
+  useEffect(() => {
+    if (!isTracking || !socket) return;
 
-    const handleGettingOrder = (data)=>{
-      console.log("delivery request received from a regular user")
-      console.log(data);
+    const handleGettingOrder = (data) => {
+      console.log("delivery request received from a regular user");
       setShowDelivery(true);
-    }
+      setOrder(data.order);
+    };
 
-    socket.on("delivery_request",handleGettingOrder);
+    socket.on("delivery_request", handleGettingOrder);
 
-    return ()=>{
-      socket.off("delivery_request",handleGettingOrder);
-    }
-
-  },[isTracking]);
+    return () => {
+      socket.off("delivery_request", handleGettingOrder);
+    };
+  }, [isTracking]);
 
   useEffect(() => {
-    if (!isTracking) {
+    if (isTracking && orderStatus === "accepted") {
+      socket.emit("rider_location_request", {
+        riderId,
+      });
+
+      socket.on("rider_location_updated", (data) => {
+        if (data.riderId === riderId) {
+          console.log("updated rider id ", data.riderLocation);
+          setUpdatedLocation(data.riderLocation[0]);
+        }
+      });
+    }
+
+    return () => {
+      socket.emit("tracking_rider_stop");
+      socket.off("rider_location_updated");
+    };
+  }, [orderStatus, isTracking]);
+
+  const handleAcceptOrder = () => {
+    socket.emit(
+      "rider_response",
+      {
+        orderId: order._id,
+        riderId: riderId,
+        response: "accepted",
+      },
+      (res) => {
+        if (res.success) {
+          console.log("Order accepted successfully.");
+          setOrderStatus("accepted");
+        } else {
+          console.log("Failed to accept the order!");
+        }
+      }
+    );
+  };
+
+  const handleRejectOrder = () => {
+    console.log("reject method is called");
+    socket.emit(
+      "rider_response",
+      {
+        orderId: order._id,
+        riderId: riderId,
+        response: "rejected",
+      },
+      (res) => {
+        if (res.success) {
+          console.log("Order rejected successfully.");
+        } else {
+          console.log("Failed to reject the order!", res);
+        }
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (!isTracking || !riderId) {
       if (watchIdRef.current) {
         navigator.geolocation.clearWatch(watchIdRef.current);
         watchIdRef.current = null;
@@ -95,16 +166,23 @@ export default function StartDelivery({isLoaded}) {
         (error) => {
           console.log("Error fetching location ", error.message);
         },
-        { enableHighAccuracy: true, maximumAge: 0 }
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 2000 }
       );
 
       intervalIdRef.current = setInterval(() => {
-        console.log("Sending rider location...");
-        socket.emit("riderLocation", {
-          location: locationRef.current,
-          riderId: user.user._id,
-          riderName: user.user.username,
-        });
+        console.log("location state ", location);
+        if (
+          locationRef.current &&
+          locationRef.current.lat &&
+          locationRef.current.lng
+        ) {
+          console.log("Sending rider location...");
+          socket.emit("riderLocation", {
+            location: locationRef.current,
+            riderId: riderId,
+            riderName: user.user.username,
+          });
+        }
       }, 5000);
     } else {
       console.error("Geolocation is not supported by this browser");
@@ -116,10 +194,10 @@ export default function StartDelivery({isLoaded}) {
       if (intervalIdRef.current) clearInterval(intervalIdRef.current);
       socket.off("riderLocation");
     };
-  }, [isTracking, user.user._id]);
+  }, [isTracking, riderId]);
 
-  const { data: deliveryStatus } = useQuery({
-    queryKey: ["isDeliverying", user.user.id],
+  const { data: deliveryStatus, refetch: fetchDeliveryStatus } = useQuery({
+    queryKey: ["isDeliverying", riderId],
     queryFn: async ({ queryKey }) => {
       const [_key, driverId] = queryKey;
 
@@ -135,7 +213,35 @@ export default function StartDelivery({isLoaded}) {
       setIsTracking(res.data.isDelivering);
       return res.data;
     },
-    enabled: user.user._id ? true : false,
+    enabled: riderId ? true : false,
+  });
+
+  const { data: currentOrderStatus, isFetched } = useQuery({
+    queryKey: ["order_status", order?._id],
+
+    queryFn: async () => {
+      if (!order._id) {
+        console.log("Order id is undefined!");
+        return;
+      }
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/status/${order._id}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (!res.data) {
+        console.log("order not found!");
+        return;
+      }
+
+      return res.data.status.status;
+    },
+    refetchInterval: 4000,
+    enabled: !!order?._id && isTracking,
+    retryOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const {
@@ -175,7 +281,6 @@ export default function StartDelivery({isLoaded}) {
     },
     onSuccess: () => {
       setIsTracking((prev) => !prev);
-      //queryClient.invalidateQueries(["isDeliverying"]);
     },
     onError: (error) => {
       setIsTracking(false);
@@ -188,14 +293,61 @@ export default function StartDelivery({isLoaded}) {
       throw new Error("Driver is required!");
     }
     await mutateAsync(userId);
-    refetch();
   };
 
+  const handleIsPickEnabling = (event) => {
+    setIsPicked(event.target.checked);
+  };
 
   return (
-    <section className="w-full h-screen flex justify-center items-center p-[16px] gap-5 bg-white">
-      {showDeliveryPopup && <AlertDialogPopup isOpen={showDeliveryPopup} handlePopupOpen={()=>setShowDelivery((prev)=>!prev)}/>}
-      <div className="w-1/2 h-full justify-center items-center">
+    <section className="w-full h-screen lg:flex justify-center items-center p-[16px] gap-5 bg-white overflow-y-scroll scrollbar-hide">
+      {showDeliveryPopup && (
+        <AlertDialogPopup
+          title={"Delivery Request"}
+          accept={"Accept"}
+          deny={"Deny"}
+          isOpen={showDeliveryPopup}
+          handlePopupOpen={() => setShowDelivery((prev) => !prev)}
+          order={order}
+          onAccept={handleAcceptOrder}
+          onReject={handleRejectOrder}
+        >
+          <div className="w-full px-5 py-3 flex flex-col gap-2 justify-center items-start ">
+            <h4 className="w-full text-sm font-medium tracking-tight text-gray-400 flex gap-2">
+              <MapPin color="black" size={17} /> Food delivery request to{" "}
+              <span className="text-black">
+                {order.user.location.address ? (
+                  order.user.location.address.split(",")[1] +
+                  ", " +
+                  order.user.location.address.split(",")[2]
+                ) : (
+                  <Skeleton className="w-[30%] h-5 rounded-full" />
+                )}
+              </span>
+            </h4>
+            <h4 className="text-sm font-medium tracking-tight text-gray-400 flex gap-2">
+              <LandPlot color="black" size={17} /> Distance :{" "}
+              {order ? (
+                order.distanceFromShopToUser + "km"
+              ) : (
+                <Skeleton className="w-[30%] h-5 rounded-full" />
+              )}
+            </h4>
+            <h4 className="text-sm font-medium tracking-tight text-gray-400 flex gap-2">
+              <Truck color="black" size={17} />
+              Amount :{" "}
+              <span className="text-green-500">
+                {order ? (
+                  "Rs. " + order.deliveryFee
+                ) : (
+                  <Skeleton className="w-[30%] h-5 rounded-full" />
+                )}
+              </span>
+            </h4>
+          </div>
+        </AlertDialogPopup>
+      )}
+      <div className="lg:w-1/2 w-full h-full justify-center items-center">
         <div className="w-full h-[4rem] flex justify-between items-start">
           <CircleArrowLeft color="black" size={20} className="cursor-pointer" />
           <div className="w-auto h-auto flex justify-center items-center gap-3">
@@ -217,12 +369,13 @@ export default function StartDelivery({isLoaded}) {
           <div className="w-full h-[30%] rounded-xl bg-[#F7F7F7] flex flex-col justify-start items-start p-[16px]">
             <div className="w-full h-auto flex justify-between items-center">
               <h5 className="text-lg font-medium text-zinc-900 flex gap-3 items-center justify-center">
-                <Package color="black"/>Start Deliverying Today!
+                <Package color="black" />
+                Start Deliverying Today!
               </h5>
               <button
                 disabled={isFetching}
                 onClick={() => {
-                  handleDeliveryEnabling(user.user._id);
+                  handleDeliveryEnabling(riderId);
                 }}
                 className={`w-[105px] h-[33px] rounded-full text-center flex justify-center items-center bg-black text-white text-sm font-medium tracking-tight ${
                   isFetching || (isTracking && "bg-gray-300")
@@ -232,14 +385,44 @@ export default function StartDelivery({isLoaded}) {
               </button>
             </div>
           </div>
-          <div className="w-full h-[70%] flex flex-col justify-center items-center mt-[25%]">
-            <img src={EmptyBox} alt="no-orders-icon" className="w-[5rem] h-[5rem] z-50"/>
-            <h3 className="text-md font-regular text-[#a09f9f]">No orders yet!</h3>
-         </div>
+
+          {order === null && (
+            <div className="w-full h-auto flex flex-col justify-center items-center mt-[25%] ">
+              <img
+                src={EmptyBox}
+                alt="no-orders-icon"
+                className="w-[5rem] h-[5rem] z-50"
+              />
+              <h3 className="text-md font-regular text-[#a09f9f]">
+                No orders yet!
+              </h3>
+            </div>
+          )}
+
+          <div className="mt-16 w-full h-auto">
+            {orderStatus === "accepted" && <Order order={order} />}
+          </div>
+
+          {isFetched &&
+            currentOrderStatus &&
+            currentOrderStatus === "reached" && (
+              <div className="w-full h-auto flex justify-start items-center">
+                <div className="w-auto h-[3rem] bg-yellow-50 border border-yellow-200 mt-5 rounded-xl flex justify-start items-center gap-3 px-4 py-3 ">
+                  <input
+                    type="checkbox"
+                    name="isPicked"
+                    onChange={handleIsPickEnabling}
+                    className="w-4 h-4 border-2 border-blue-400  rounded-xl"
+                  />
+                  <span className="text-sm font-medium tracking-tight text-black">
+                    Confirm order pickup
+                  </span>
+                </div>
+              </div>
+            )}
         </div>
-        
       </div>
-      <div className="w-1/2 h-full flex justify-center items-center relative z-20">
+      <div className="lg:w-1/2 w-full h-full flex justify-center items-center relative z-20">
         <div className="absolute w-full top-2 h-[12%] flex justify-center items-center z-50">
           <div className="w-[90%] h-full bg-white rounded-xl p-[16px] flex justify-evenly items-center gap-5">
             <div className="w-auto h-auto flex justify-center items-center gap-2">
@@ -293,8 +476,21 @@ export default function StartDelivery({isLoaded}) {
         </div>
         <GoogleMapContainer
           isLoaded={isLoaded}
-          isRiderMap={user.user.role==='driver' ? true : false}
-          riders={isTracking ? riders : []}
+          isRiderMap={user.user.role === "driver" ? true : false}
+          isTracking={isTracking}
+          isPicked={isPicked}
+          singleRider={
+            locationRef.current && updatedLocation
+              ? {
+                  location: locationRef.current,
+                  updatedLocation,
+                  riderId: riderId,
+                  username: user.user.username,
+                }
+              : null
+          }
+          order={orderStatus === "accepted" && order ? order : null}
+          userLocation={order && order.user}
         />
       </div>
     </section>

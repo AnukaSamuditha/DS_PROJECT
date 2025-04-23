@@ -9,20 +9,29 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export default function AlertDialogPopup({isOpen,handlePopupOpen}) {
+
+export default function AlertDialogPopup({isOpen,handlePopupOpen,order, onAccept, onReject,title,deny,accept,children}) {
+  const handleOnAccept = ()=>{
+    onAccept();
+    handlePopupOpen();
+  }
+
+  const handleOnReject = ()=>{
+    onReject();
+    handlePopupOpen();
+  }
   return (
     <AlertDialog open={isOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delivery Request</AlertDialogTitle>
+          <AlertDialogTitle>{title && title}</AlertDialogTitle>
           <AlertDialogDescription>
-            Food delivery request to Homagama<br/>
-            Distance
+            {children}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handlePopupOpen}>Deny</AlertDialogCancel>
-          <AlertDialogAction onClick={handlePopupOpen}>Accept</AlertDialogAction>
+          <AlertDialogCancel onClick={handleOnReject}>{deny && deny}</AlertDialogCancel>
+          <AlertDialogAction onClick={handleOnAccept}>{accept && accept}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

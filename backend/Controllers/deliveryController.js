@@ -92,16 +92,15 @@ exports.getLocationByCoords = async (req, res) => {
 
 exports.enableDelivering = async (req, res) => {
   const { id } = req.params;
-  
-  try {
 
-    if(!id){
-        return res.status(400).json({
-            message:"Driver id is required"
-        })
+  try {
+    if (!id) {
+      return res.status(400).json({
+        message: "Driver id is required",
+      });
     }
 
-    const driver = await User.findById(id).select('isDelivering username role');
+    const driver = await User.findById(id).select("isDelivering username role");
     if (!driver) {
       return res.status(404).json({
         message: "Invalid driver info!",
@@ -109,13 +108,15 @@ exports.enableDelivering = async (req, res) => {
     }
 
     driver.isDelivering = !driver.isDelivering;
-    if(!driver.isDelivering){
-        await redisClient.zRem("DRIVERS",driver._id.toString());
+    if (!driver.isDelivering) {
+      await redisClient.zRem("DRIVERS", driver._id.toString());
     }
     const updatedDriver = await driver.save();
 
     res.status(200).json({
-      message: `isDelivering ${updatedDriver.isDelivering ? "enabled" : "disabled"} on the driver ${updatedDriver.username}`,
+      message: `isDelivering ${
+        updatedDriver.isDelivering ? "enabled" : "disabled"
+      } on the driver ${updatedDriver.username}`,
     });
   } catch (error) {
     res.status(500).json({
@@ -125,31 +126,62 @@ exports.enableDelivering = async (req, res) => {
   }
 };
 
-exports.getDeliveryStatus = async(req,res)=>{
-    const {id} = req.params;
-    try{
-        if(!id){
-            return res.status(400).json({
-                message:"Driver id is required"
-            })
-        }
-        const result = await User.findById(id).select('isDelivering');
-
-        if(!result) {
-            return res.status(404).json({
-                message:"Invalid driver id"
-            })
-        }
-
-        res.status(200).json({
-            message:"isDelivering fetched successfully",
-            result
-        })
-
-    }catch(error){
-        res.status(500).json({
-            message: "Error occured while getting isDelivering!",
-            error: error.message,
-          });
+exports.getDeliveryStatus = async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (!id) {
+      return res.status(400).json({
+        message: "Driver id is required",
+      });
     }
-}
+    const result = await User.findById(id).select("isDelivering");
+
+    if (!result) {
+      return res.status(404).json({
+        message: "Invalid driver id",
+      });
+    }
+
+    res.status(200).json({
+      message: "isDelivering fetched successfully",
+      result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error occured while getting isDelivering!",
+      error: error.message,
+    });
+  }
+};
+
+exports.getRiderLocation = async (req, res) => {
+  const {id} = req.params;
+
+  try {
+
+    if (!id) {
+      return res.status(400).json({
+        message: "Driver id is required",
+      });
+    }
+
+    const location = await redisClient.geoPos(`DRIVERS`,id);
+    if(!location){
+      return res.status(404).json({
+        message:"Rider location not available!"
+      })
+    }
+
+    console.log("fetched location ",location)
+    res.status(200).json({
+      message:"Rider location fetched successfully",
+      location:location
+    })
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Error occured while getting rider location!",
+      error: error.message,
+    });
+  }
+};

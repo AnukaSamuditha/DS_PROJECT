@@ -12,7 +12,7 @@ export default function AuthProvider({ children }) {
         queryKey: ["user_self"],
         queryFn: async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_PREFIX}/users/get-user`, {
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_PREFIX}/users/self`, {
                     withCredentials: true
                 });
                 return res.data;
@@ -30,11 +30,11 @@ export default function AuthProvider({ children }) {
     }, [data, isLoading]);
 
     const login = async (userInfo) => {
-        setUser(userInfo);
+        //setUser(userInfo);
     };
 
     const logout = async () => {
-        setUser(null);
+        //setUser(null);
     };
 
     if (!isInitialized) {
