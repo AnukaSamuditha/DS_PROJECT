@@ -30,6 +30,8 @@ const PlaceOrderPage = () => {
 
   const [message, setMessage] = useState('');
   const token = localStorage.getItem('token'); // JWT token from login
+  console.log(token);
+  
 
   // Recalculate total amount
   const updateAmount = () => {
@@ -58,7 +60,7 @@ const PlaceOrderPage = () => {
 
     try {
       const res = await axios.post(
-        'http://localhost:6060/api/orders',
+        'http://localhost:6060/orders',
         order,
         {
           headers: {

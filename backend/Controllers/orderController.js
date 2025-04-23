@@ -2,7 +2,7 @@ const Order = require('../Models/orderModel');
 
 exports.placeOrder = async (req, res) => {
   try {
-    console.log("Authenticated user from token:", req.user);
+    //console.log("Authenticated user from token:", req.user);
     const orderData = req.body;
     const totalAmount = orderData.amount + (orderData.deliveryFee || 0);
 

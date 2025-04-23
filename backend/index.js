@@ -1,15 +1,23 @@
+require("dotenv").config();
+const cookieParser = require("cookie-parser")
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
 const orderRoutes = require('./Routes/orderRoutes');
 const userRoutes = require("./Routes/userRoutes");
-require("dotenv").config();
+
+
+app.use(cors({
+  origin:"http://localhost:5173",
+  credentials:true
+}))
+app.use(cookieParser())
 
 app.use(express.json());
 app.use(cors());
 app.use("/users",userRoutes);
-app.use('/api/orders', orderRoutes);
+app.use('/orders', orderRoutes);
 
 mongoose
   .connect(process.env.MONGO_DB_URL)
