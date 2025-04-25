@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "@/axiosConfig"; // ✅ axios with credentials
 import { useNavigate } from "react-router";
 import StarRating from "../components/StarRating"; // ⭐ Import star component
 
@@ -7,19 +7,11 @@ export default function RestaurantList() {
   const [restaurants, setRestaurants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_PREFIX}/restaurants/get-restaurants`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await axiosInstance.get("/restaurants/get-restaurants");
 
         const verified = res.data?.restaurants?.filter((r) => r.adminApproved);
         setRestaurants(verified || []);
@@ -67,7 +59,6 @@ export default function RestaurantList() {
 
               <h3 className="text-xl font-semibold">{res.name}</h3>
 
-              {/* ⭐ Average Rating Preview */}
               {res.averageRating && (
                 <div className="flex items-center gap-1 mt-1">
                   <StarRating rating={parseFloat(res.averageRating)} />
@@ -93,6 +84,109 @@ export default function RestaurantList() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+// import { useEffect, useState } from "react";
+// import axios from "axios";
+// import { useNavigate } from "react-router";
+// import StarRating from "../components/StarRating"; // ⭐ Import star component
+
+// export default function RestaurantList() {
+//   const [restaurants, setRestaurants] = useState([]);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const navigate = useNavigate();
+//   const token = localStorage.getItem("token");
+
+//   useEffect(() => {
+//     const fetchRestaurants = async () => {
+//       try {
+//         const res = await axios.get(
+//           `${import.meta.env.VITE_BACKEND_PREFIX}/restaurants/get-restaurants`,
+//           {
+//             headers: {
+//               Authorization: `Bearer ${token}`,
+//             },
+//           }
+//         );
+
+//         const verified = res.data?.restaurants?.filter((r) => r.adminApproved);
+//         setRestaurants(verified || []);
+//       } catch (err) {
+//         console.error("Error fetching restaurants", err);
+//       }
+//     };
+
+//     fetchRestaurants();
+//   }, []);
+
+//   const filteredRestaurants = restaurants.filter((res) =>
+//     res.name.toLowerCase().includes(searchTerm.toLowerCase())
+//   );
+
+//   return (
+//     <div className="p-4 text-white">
+//       <h2 className="text-2xl font-bold mb-4">Browse Restaurants</h2>
+
+//       <input
+//         type="text"
+//         placeholder="Search by name..."
+//         value={searchTerm}
+//         onChange={(e) => setSearchTerm(e.target.value)}
+//         className="w-full mb-6 px-3 py-2 rounded border border-zinc-600 bg-transparent text-white placeholder-zinc-400"
+//       />
+
+//       {filteredRestaurants.length === 0 ? (
+//         <p>No restaurants found.</p>
+//       ) : (
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+//           {filteredRestaurants.map((res) => (
+//             <div
+//               key={res._id}
+//               className="border border-zinc-700 p-4 rounded bg-zinc-900 hover:shadow-lg cursor-pointer transition"
+//               onClick={() => navigate(`/restaurants/${res._id}`)}
+//             >
+//               {res.photo && (
+//                 <img
+//                   src={`${import.meta.env.VITE_BACKEND_PREFIX}/uploads/${res.photo}`}
+//                   alt={res.name}
+//                   className="w-full h-40 object-cover rounded mb-3"
+//                 />
+//               )}
+
+//               <h3 className="text-xl font-semibold">{res.name}</h3>
+
+//               {/* ⭐ Average Rating Preview */}
+//               {res.averageRating && (
+//                 <div className="flex items-center gap-1 mt-1">
+//                   <StarRating rating={parseFloat(res.averageRating)} />
+//                   <span className="text-xs text-zinc-400">
+//                     ({parseFloat(res.averageRating).toFixed(1)})
+//                   </span>
+//                 </div>
+//               )}
+
+//               <p className="text-sm text-zinc-400 mt-1">{res.address}</p>
+
+//               <span
+//                 className={`inline-block mt-3 px-2 py-1 text-sm rounded font-medium ${
+//                   res.isAvailable ? "bg-green-600 text-white" : "bg-red-600 text-white"
+//                 }`}
+//               >
+//                 {res.isAvailable ? "Open" : "Closed"}
+//               </span>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
 
 
 

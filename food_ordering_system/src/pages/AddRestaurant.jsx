@@ -1,11 +1,10 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import MapPicker from "../components/MapPicker";
+import axiosInstance from "@/axiosConfig"; // ✅ Axios with cookies
 
 export default function AddRestaurant() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   const [form, setForm] = useState({
     name: "",
@@ -43,9 +42,8 @@ export default function AddRestaurant() {
       formData.append("longitude", location.lng);
       if (form.image) formData.append("photo", form.image);
 
-      await axios.post(`${import.meta.env.VITE_BACKEND_PREFIX}/restaurants/create-restaurant`, formData, {
+      await axiosInstance.post("/restaurants/create-restaurant", formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
@@ -120,7 +118,6 @@ export default function AddRestaurant() {
           }}
         />
 
-        {/* Optional manual fallback */}
         <input
           type="text"
           name="address"
@@ -147,6 +144,162 @@ export default function AddRestaurant() {
     </div>
   );
 }
+
+
+
+
+
+
+
+// import { useState } from "react";
+// import axios from "axios";
+// import { useNavigate } from "react-router-dom";
+// import MapPicker from "../components/MapPicker";
+
+// export default function AddRestaurant() {
+//   const navigate = useNavigate();
+//   const token = localStorage.getItem("token");
+
+//   const [form, setForm] = useState({
+//     name: "",
+//     description: "",
+//     address: "",
+//     contactNumber: "",
+//     openingHours: "",
+//     image: null,
+//   });
+
+//   const [location, setLocation] = useState({ lat: null, lng: null, address: "" });
+//   const [loading, setLoading] = useState(false);
+
+//   const handleChange = (e) => {
+//     const { name, value, files } = e.target;
+//     if (name === "image") {
+//       setForm({ ...form, image: files[0] });
+//     } else {
+//       setForm({ ...form, [name]: value });
+//     }
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+
+//     try {
+//       const formData = new FormData();
+//       formData.append("name", form.name);
+//       formData.append("description", form.description);
+//       formData.append("address", location.address || form.address);
+//       formData.append("contactNumber", form.contactNumber);
+//       formData.append("openingHours", form.openingHours);
+//       formData.append("latitude", location.lat);
+//       formData.append("longitude", location.lng);
+//       if (form.image) formData.append("photo", form.image);
+
+//       await axios.post(`${import.meta.env.VITE_BACKEND_PREFIX}/restaurants/create-restaurant`, formData, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           "Content-Type": "multipart/form-data",
+//         },
+//       });
+
+//       alert("Restaurant added successfully!");
+//       navigate("/restaurant-dashboard");
+//     } catch (error) {
+//       console.error("Error adding restaurant", error);
+//       const message = error.response?.data?.message || "Failed to add restaurant";
+//       alert(message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="max-w-2xl mx-auto text-white p-4">
+//       <h2 className="text-2xl font-bold mb-4">Add New Restaurant</h2>
+
+//       <form onSubmit={handleSubmit} className="space-y-4">
+//         <input
+//           type="text"
+//           name="name"
+//           placeholder="Restaurant Name"
+//           value={form.name}
+//           onChange={handleChange}
+//           required
+//           className="w-full px-4 py-2 bg-zinc-800 border border-zinc-600 rounded text-white"
+//         />
+
+//         <textarea
+//           name="description"
+//           placeholder="Description"
+//           value={form.description}
+//           onChange={handleChange}
+//           required
+//           className="w-full px-4 py-2 bg-zinc-800 border border-zinc-600 rounded text-white"
+//         />
+
+//         <input
+//           type="text"
+//           name="contactNumber"
+//           placeholder="Contact Number"
+//           value={form.contactNumber}
+//           onChange={handleChange}
+//           required
+//           className="w-full px-4 py-2 bg-zinc-800 border border-zinc-600 rounded text-white"
+//         />
+
+//         <input
+//           type="text"
+//           name="openingHours"
+//           placeholder="Opening Hours (e.g., 10 AM - 10 PM)"
+//           value={form.openingHours}
+//           onChange={handleChange}
+//           required
+//           className="w-full px-4 py-2 bg-zinc-800 border border-zinc-600 rounded text-white"
+//         />
+
+//         <input
+//           type="file"
+//           name="image"
+//           accept="image/*"
+//           onChange={handleChange}
+//           className="w-full bg-zinc-800 border border-zinc-600 text-white rounded p-2"
+//         />
+
+//         {/* 🌍 Google Maps Picker */}
+//         <MapPicker
+//           onLocationSelect={({ lat, lng, address }) => {
+//             setLocation({ lat, lng, address });
+//           }}
+//         />
+
+//         {/* Optional manual fallback */}
+//         <input
+//           type="text"
+//           name="address"
+//           placeholder="Address (optional)"
+//           value={form.address}
+//           onChange={handleChange}
+//           className="w-full px-4 py-2 bg-zinc-800 border border-zinc-600 rounded text-white"
+//         />
+
+//         {location.lat && (
+//           <p className="text-sm text-zinc-400">
+//             Selected Location: {location.lat.toFixed(5)}, {location.lng.toFixed(5)}
+//           </p>
+//         )}
+
+//         <button
+//           type="submit"
+//           disabled={loading}
+//           className="bg-green-600 px-4 py-2 rounded text-white hover:bg-green-700"
+//         >
+//           {loading ? "Submitting..." : "Add Restaurant"}
+//         </button>
+//       </form>
+//     </div>
+//   );
+// }
 
 
 

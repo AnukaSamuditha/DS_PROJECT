@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import axios from "axios";
+import axiosInstance from "@/axiosConfig"; // ✅ axios with credentials
 
 export default function EditMenuItem() {
   const { id } = useParams(); // menuItem ID
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const backendURL = import.meta.env.VITE_BACKEND_PREFIX;
 
   const [form, setForm] = useState({
     name: "",
@@ -23,10 +21,7 @@ export default function EditMenuItem() {
   useEffect(() => {
     const fetchMenuItem = async () => {
       try {
-        const res = await axios.get(`${backendURL}/MenuItems/get-menuItem/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
+        const res = await axiosInstance.get(`/MenuItems/get-menuItem/${id}`);
         const data = res.data.menuItem;
 
         setForm({
@@ -70,15 +65,14 @@ export default function EditMenuItem() {
       data.append("imageUrl", form.imageUrl);
       if (form.photo) data.append("photo", form.photo);
 
-      await axios.patch(`${backendURL}/MenuItems/update-menuItem/${id}`, data, {
+      await axiosInstance.patch(`/MenuItems/update-menuItem/${id}`, data, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
 
       alert("Menu item updated!");
-      navigate(-1); // or navigate(`/restaurant/${restaurantId}/menu-items`);
+      navigate(-1); // back to previous page
     } catch (err) {
       console.error("Update error", err);
       alert("Update failed.");
