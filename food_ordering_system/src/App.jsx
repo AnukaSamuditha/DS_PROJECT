@@ -14,7 +14,7 @@ import StartDelivery from "./components/StartDelivery";
 import RequireAuth from "./components/RequireAuth";
 import PreOrder from "./components/PreOrder";
 import GoogleMapProvider from "./Providers/GoogleMapProvider";
-import useQuery from "./hooks/useQuery";
+import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect } from "react";
 import Cart from "./components/Payment/Cart";
