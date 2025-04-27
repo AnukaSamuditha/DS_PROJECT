@@ -1,9 +1,107 @@
 const User = require("../Models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const express = require("express");
+const userRoutes = require("../Routes/userRoutes");
+const paymentRoutes = require("../Routes/payment.route");
+const cartRoutes = require("../Routes/cart.route");
+const productRoutes = require("../Routes/product.route");
 require("dotenv").config();
 const JWT_SECRET = process.env.JWT_SECRET;
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
+
+// exports.createUser = async (req, res) => {
+//   try {
+//     const { username, email, password, role } = req.body;
+//
+//       try {
+//         const customer = await stripe.customers.create({
+//           name:username,
+//           email:username,
+//
+//         });
+//
+//         res.status(200).json({ customerId: customer.id });
+//       } catch (error) {
+//         console.error("Error creating Stripe customer:", error);
+//         res.status(500).json({ error: error.message });
+//       }
+//
+//     const emailCheck = await User.findOne({ email });
+//     if (emailCheck) {
+//       return res.status(409).json({
+//         message: "Email already exists!",
+//       });
+//     }
+//     let newUser;
+//
+//     if(role){
+//       newUser = new User({
+//         username,
+//         customerId:,
+//         email,
+//         password,
+//         role
+//       });
+//
+//     }else{
+//       newUser = new User({
+//         username,
+//         email,
+//         password,
+//       });
+//     }
+//
+//     const salt = await bcrypt.genSalt(10);
+//     newUser.password = await bcrypt.hash(password, salt);
+//     console.log("working")
+//
+//     try {
+//       await newUser.save();
+//       const payLoad = {
+//         user: {
+//           id: newUser._id,
+//           email: newUser.email,
+//           role: newUser.role,
+//         },
+//       };
+//
+//       const { password, ...userWithoutPassword } = newUser._doc;
+//
+//       jwt.sign(payLoad, JWT_SECRET, { expiresIn: "3650d" }, (err, token) => {
+//         if (err) {
+//           res.status(500).json({
+//             message: "Error creating jwt token",
+//             error: err.message,
+//           });
+//         }
+//         res.cookie('token', token, {
+//           httpOnly: true,
+//           secure: process.env.NODE_ENV === 'production',
+//           sameSite: 'strict',
+//           maxAge: 86400000 // 24 hours
+//         });
+//         res.status(201).json({
+//           message: "user registered successfully",
+//           user: userWithoutPassword,
+//           token,
+//         });
+//       });
+//     } catch (error) {
+//       res.status(500).json({
+//         message: "Error creating the user",
+//         error: error.message,
+//       });
+//     }
+//   } catch (err) {
+//     res.status(500).json({
+//       message: "Error creating the user",
+//       error: err,
+//     });
+//   }
+// };
 exports.createUser = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
@@ -14,29 +112,47 @@ exports.createUser = async (req, res) => {
         message: "Email already exists!",
       });
     }
-    let newUser;
 
-    if(role){
+
+    let customerId;
+    try {
+      const customer = await stripe.customers.create({
+        name: username,
+        email: email,
+      });
+      customerId = customer.id;
+    } catch (error) {
+      console.error("Error creating Stripe customer:", error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    let newUser;
+    if (role) {
       newUser = new User({
         username,
+        customerId,
         email,
         password,
         role
       });
-
-    }else{
+    } else {
       newUser = new User({
         username,
         email,
         password,
+        customerId
       });
     }
+
 
     const salt = await bcrypt.genSalt(10);
     newUser.password = await bcrypt.hash(password, salt);
 
     try {
+
       await newUser.save();
+
+
       const payLoad = {
         user: {
           id: newUser._id,
@@ -47,18 +163,25 @@ exports.createUser = async (req, res) => {
 
       const { password, ...userWithoutPassword } = newUser._doc;
 
-      jwt.sign(payLoad, JWT_SECRET, { expiresIn: "1 days" }, (err, token) => {
+      jwt.sign(payLoad, JWT_SECRET, { expiresIn: "3650d" }, (err, token) => {
         if (err) {
           res.status(500).json({
             message: "Error creating jwt token",
             error: err.message,
           });
+        } else {
+          res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 86400000 // 24 hours
+          });
+          res.status(201).json({
+            message: "User registered successfully",
+            user: userWithoutPassword,
+            token,
+          });
         }
-        res.status(201).json({
-          message: "user registered successfully",
-          user: userWithoutPassword,
-          token,
-        });
       });
     } catch (error) {
       res.status(500).json({
@@ -69,7 +192,7 @@ exports.createUser = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Error creating the user",
-      error: err,
+      error: err.message,
     });
   }
 };
@@ -99,13 +222,19 @@ exports.loginUser = async (req, res) => {
       },
     };
 
-    jwt.sign(payLoad, JWT_SECRET, { expiresIn: "1 day" }, (error, token) => {
+    jwt.sign(payLoad, JWT_SECRET, { expiresIn: "3650d" }, (error, token) => {
       if (error) {
         return res.status(500).json({
           message: "Error creating jwt token",
           error: error.message,
         });
       }
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 86400000 // 24 hours
+      });
       res.status(201).json({
         message: "User logged in successfully",
         token,
@@ -211,3 +340,4 @@ exports.deleteUsers = async(req,res)=>{
       });
     }
 }
+

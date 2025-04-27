@@ -2,15 +2,21 @@
 
 @plugin 'tailwindcss-animate';
 
+
 @custom-variant dark (&:is(.dark *));
 @import "tailwindcss";
 
 *{
-    box-sizing:border-box,
+    box-sizing:border-box;
 }
 body {
-    font-family: "Geist", sans-serif; 
+    font-family: "Geist", sans-serif;
     background-color: black;
+
+}
+.swal-cancel-button {
+    color: black !important;
+    border: 1px solid #ccc;
 }
 
 :root {
@@ -121,11 +127,11 @@ body {
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
     }
 }
 
@@ -133,5 +139,13 @@ body {
     border: 1px solid transparent; /* Set a solid transparent border */
     border-radius: 100px; /* Make the border fully rounded */
     border-image: linear-gradient(to right, #ffaa40, #9c40ff, #ffaa40) 1; /* Apply the gradient to the border */
-  }
-  
+}
+/* Hide scrollbar for all browsers */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+}

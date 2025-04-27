@@ -9,11 +9,13 @@ export default function AuthProvider({children}){
     const login = async(userInfo,token)=>{
         setUser(userInfo);
         localStorage.setItem("token",token);
+        localStorage.setItem("user",userInfo)
     }
     
     const logout = async()=>{
         setUser(null);
         localStorage.removeItem("token");
+        localStorage.removeItem("user")
     }
 
     return(
