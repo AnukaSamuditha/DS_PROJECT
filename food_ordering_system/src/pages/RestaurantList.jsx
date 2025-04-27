@@ -28,55 +28,62 @@ export default function RestaurantList() {
   );
 
   return (
-    <div className="p-4 text-white">
-      <h2 className="text-2xl font-bold mb-4">Browse Restaurants</h2>
+    <div className="p-6 max-w-7xl mx-auto space-y-8">
+      {/* Page Heading */}
+      <h2 className="text-3xl font-bold text-gray-900">Browse Restaurants</h2>
 
+      {/* Search Bar */}
       <input
         type="text"
         placeholder="Search by name..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full mb-6 px-3 py-2 rounded border border-zinc-600 bg-transparent text-white placeholder-zinc-400"
+        className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-black"
       />
 
+      {/* Restaurants Grid */}
       {filteredRestaurants.length === 0 ? (
-        <p>No restaurants found.</p>
+        <p className="text-center text-gray-500">No restaurants found.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredRestaurants.map((res) => (
             <div
               key={res._id}
-              className="border border-zinc-700 p-4 rounded bg-zinc-900 hover:shadow-lg cursor-pointer transition"
+              className="bg-white rounded-2xl shadow hover:shadow-lg transition cursor-pointer flex flex-col"
               onClick={() => navigate(`/restaurants/${res._id}`)}
             >
               {res.photo && (
                 <img
                   src={`${import.meta.env.VITE_BACKEND_PREFIX}/uploads/${res.photo}`}
                   alt={res.name}
-                  className="w-full h-40 object-cover rounded mb-3"
+                  className="w-full h-48 object-cover rounded-t-2xl"
                 />
               )}
 
-              <h3 className="text-xl font-semibold">{res.name}</h3>
+              <div className="p-4 flex flex-col flex-1">
+                <h3 className="text-xl font-bold text-gray-900">{res.name}</h3>
 
-              {res.averageRating && (
-                <div className="flex items-center gap-1 mt-1">
-                  <StarRating rating={parseFloat(res.averageRating)} />
-                  <span className="text-xs text-zinc-400">
-                    ({parseFloat(res.averageRating).toFixed(1)})
-                  </span>
-                </div>
-              )}
+                {res.averageRating && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <StarRating rating={parseFloat(res.averageRating)} />
+                    <span className="text-xs text-gray-500">
+                      ({parseFloat(res.averageRating).toFixed(1)})
+                    </span>
+                  </div>
+                )}
 
-              <p className="text-sm text-zinc-400 mt-1">{res.address}</p>
+                <p className="text-sm text-gray-600 mt-2">{res.address}</p>
 
-              <span
-                className={`inline-block mt-3 px-2 py-1 text-sm rounded font-medium ${
-                  res.isAvailable ? "bg-green-600 text-white" : "bg-red-600 text-white"
-                }`}
-              >
-                {res.isAvailable ? "Open" : "Closed"}
-              </span>
+                <span
+                  className={`inline-block mt-3 w-max px-3 py-1 text-xs rounded-full font-semibold ${
+                    res.isAvailable
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {res.isAvailable ? "Open" : "Closed"}
+                </span>
+              </div>
             </div>
           ))}
         </div>
@@ -84,6 +91,108 @@ export default function RestaurantList() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//og
+// import { useEffect, useState } from "react";
+// import axiosInstance from "@/axiosConfig"; // ✅ axios with credentials
+// import { useNavigate } from "react-router";
+// import StarRating from "../components/StarRating"; // ⭐ Import star component
+
+// export default function RestaurantList() {
+//   const [restaurants, setRestaurants] = useState([]);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const fetchRestaurants = async () => {
+//       try {
+//         const res = await axiosInstance.get("/restaurants/get-restaurants");
+
+//         const verified = res.data?.restaurants?.filter((r) => r.adminApproved);
+//         setRestaurants(verified || []);
+//       } catch (err) {
+//         console.error("Error fetching restaurants", err);
+//       }
+//     };
+
+//     fetchRestaurants();
+//   }, []);
+
+//   const filteredRestaurants = restaurants.filter((res) =>
+//     res.name.toLowerCase().includes(searchTerm.toLowerCase())
+//   );
+
+//   return (
+//     <div className="p-4 text-white">
+//       <h2 className="text-2xl font-bold mb-4">Browse Restaurants</h2>
+
+//       <input
+//         type="text"
+//         placeholder="Search by name..."
+//         value={searchTerm}
+//         onChange={(e) => setSearchTerm(e.target.value)}
+//         className="w-full mb-6 px-3 py-2 rounded border border-zinc-600 bg-transparent text-white placeholder-zinc-400"
+//       />
+
+//       {filteredRestaurants.length === 0 ? (
+//         <p>No restaurants found.</p>
+//       ) : (
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+//           {filteredRestaurants.map((res) => (
+//             <div
+//               key={res._id}
+//               className="border border-zinc-700 p-4 rounded bg-zinc-900 hover:shadow-lg cursor-pointer transition"
+//               onClick={() => navigate(`/restaurants/${res._id}`)}
+//             >
+//               {res.photo && (
+//                 <img
+//                   src={`${import.meta.env.VITE_BACKEND_PREFIX}/uploads/${res.photo}`}
+//                   alt={res.name}
+//                   className="w-full h-40 object-cover rounded mb-3"
+//                 />
+//               )}
+
+//               <h3 className="text-xl font-semibold">{res.name}</h3>
+
+//               {res.averageRating && (
+//                 <div className="flex items-center gap-1 mt-1">
+//                   <StarRating rating={parseFloat(res.averageRating)} />
+//                   <span className="text-xs text-zinc-400">
+//                     ({parseFloat(res.averageRating).toFixed(1)})
+//                   </span>
+//                 </div>
+//               )}
+
+//               <p className="text-sm text-zinc-400 mt-1">{res.address}</p>
+
+//               <span
+//                 className={`inline-block mt-3 px-2 py-1 text-sm rounded font-medium ${
+//                   res.isAvailable ? "bg-green-600 text-white" : "bg-red-600 text-white"
+//                 }`}
+//               >
+//                 {res.isAvailable ? "Open" : "Closed"}
+//               </span>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
 
 
 

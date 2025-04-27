@@ -9,8 +9,12 @@
     box-sizing:border-box,
 }
 body {
+   /* font-family: "Geist", sans-serif; 
+    background-color: black;*/
     font-family: "Geist", sans-serif; 
-    background-color: black;
+    background-color: white; /* 🔥 Change black to white */
+    color: #1f2937; /* text-gray-800 */
+
 }
 
 :root {

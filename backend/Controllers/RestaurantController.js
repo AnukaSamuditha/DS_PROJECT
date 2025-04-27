@@ -1,50 +1,114 @@
 const RestaurantSchema = require("../Models/RestaurantModel");
 const User = require("../Models/User");
 const Review = require("../Models/reviewSchema")
-
+const MenuItemSchema = require("../Models/MenuItemModel"); // make sure you import your MenuItem model
 
 //Create a restaurant
 const createRestaurant = async (req, res) => {
-    try{
-        const {name, description, address, contactNumber, openingHours, imageUrl, latitude, longitude} = req.body;
-        const ownerId = req.user.id;   //for previous version of auth this should be "const ownerId = req.user.user.id"
-        const photo = req.file ? req.file.filename: '';
+  try {
+    const {
+      name,
+      description,
+      address,
+      contactNumber,
+      openingHours,
+      imageUrl,
+    } = req.body;
 
-        //check if user is a restaurant owner
-        const user = await User.findById(ownerId);
-        if(user.role !== 'restaurantOwner'){
-            return res.status(403).json({ message: "Only restaurant owners can create restaurants" });
-        }
+    // ✅ Parse and validate latitude/longitude
+    const latitude = parseFloat(req.body.latitude);
+    const longitude = parseFloat(req.body.longitude);
 
-        const newRestaurant = new RestaurantSchema({
-            name,
-            description,
-            address,
-            contactNumber,
-            openingHours,
-            imageUrl,
-            photo,
-            owner: ownerId,
-            location: {
-                type: "Point",
-                coordinates: [longitude, latitude] // 📌 Note the order: [lng, lat]
-            }
-        });
-
-        await newRestaurant.save();
-
-        res.status(201).json({
-            message: "Restaurant created successfully",
-            restaurant: newRestaurant
-        });
-
-    }catch (err){
-        res.status(500).json({
-            message: "Error creating restaurant",
-            err: err.message
-        });
+    if (isNaN(latitude) || isNaN(longitude)) {
+      return res.status(400).json({ message: "Latitude and Longitude are required and must be valid numbers." });
     }
-}
+
+    // ✅ Get authenticated user's ID
+    const ownerId = req.user.id;
+
+    // ✅ Handle uploaded photo
+    const photo = req.file ? req.file.filename : "";
+
+    // ✅ Create new restaurant document
+    const newRestaurant = new RestaurantSchema({
+      name,
+      description,
+      address,
+      contactNumber,
+      openingHours,
+      imageUrl,
+      photo,
+      owner: ownerId,
+      location: {
+        type: "Point",
+        coordinates: [longitude, latitude], // ✅ Note: [longitude, latitude] order for GeoJSON
+      },
+    });
+
+    // ✅ Save to database
+    await newRestaurant.save();
+
+    return res.status(201).json({
+      message: "Restaurant created successfully",
+      restaurant: newRestaurant,
+    });
+
+  } catch (err) {
+    // ✅ Important backend error logging
+    console.error("🔥 Error creating restaurant:", err);
+
+    return res.status(500).json({
+      message: "Error creating restaurant",
+      error: err.message,
+    });
+  }
+};
+
+module.exports = { createRestaurant };
+
+
+
+// const createRestaurant = async (req, res) => {
+//     try{
+//         const {name, description, address, contactNumber, openingHours, imageUrl, latitude, longitude} = req.body;
+//         const ownerId = req.user.id;   //for previous version of auth this should be "const ownerId = req.user.user.id"
+//         const photo = req.file ? req.file.filename: '';
+
+//         //check if user is a restaurant owner
+//         const user = await User.findById(ownerId);
+//         if(user.role !== 'restaurantOwner'){
+//             return res.status(403).json({ message: "Only restaurant owners can create restaurants" });
+//         }
+
+//         const newRestaurant = new RestaurantSchema({
+//             name,
+//             description,
+//             address,
+//             contactNumber,
+//             openingHours,
+//             imageUrl,
+//             photo,
+//             owner: ownerId,
+//             location: {
+//                 type: "Point",
+//                 coordinates: [longitude, latitude] // 📌 Note the order: [lng, lat]
+//             }
+//         });
+
+//         await newRestaurant.save();
+
+//         res.status(201).json({
+//             message: "Restaurant created successfully",
+//             restaurant: newRestaurant
+//         });
+
+//     }catch (err){
+//         res.status(500).json({
+//             message: "Error creating restaurant",
+//             err: err.message
+//         });
+//     }
+// }
 
 //get all restaurnats
 const getAllRestaurants = async (req, res) => {
@@ -245,31 +309,68 @@ const updateRestaurant = async (req, res) => {
 
 //delete restaurant
 const deleteRestaurant = async (req, res) => {
-    try{
-        const { id } = req.params; //get restaurant id from URL
-        const userId = req.user.id;  //get logged in user id from token
-        const userRole = req.user.role; //role of the logged in user
+  try {
+    const { id } = req.params; // get restaurant id from URL
+    const userId = req.user.id; // get logged in user id from token
+    const userRole = req.user.role; // role of the logged in user
 
-        //find the restaurant by id
-        const restaurant = await RestaurantSchema.findById(id);
-        if(!restaurant){
-            return res.status(404).json({ message: "Restaurant not found" });
-        }
-
-        //check if the logged in user is the owner or an admin
-        if (restaurant.owner.toString() !== userId && userRole !== 'admin'){
-            return res.status(403).json({ message: "You can only delete your own restaurant"});
-        }
-
-        //delete restaurant
-        await RestaurantSchema.findByIdAndDelete(id);
-
-
-        res.status(200).json({ message: "Restuant deleted successfully"});
-    }catch (err){
-        res.status(500).json({ message: "Error deleting restaurant", err: err.message});
+    // find the restaurant by id
+    const restaurant = await RestaurantSchema.findById(id);
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
     }
-}
+
+    // check if the logged in user is the owner or an admin
+    if (restaurant.owner.toString() !== userId && userRole !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "You can only delete your own restaurant" });
+    }
+
+    // 🔥 First delete all related menu items
+    await MenuItemSchema.deleteMany({ restaurant: id });
+
+    // 🔥 Then delete the restaurant itself
+    await RestaurantSchema.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Restaurant and its menu items deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error deleting restaurant", err: err.message });
+  }
+};
+
+
+
+
+
+
+// const deleteRestaurant = async (req, res) => {
+//     try{
+//         const { id } = req.params; //get restaurant id from URL
+//         const userId = req.user.id;  //get logged in user id from token
+//         const userRole = req.user.role; //role of the logged in user
+
+//         //find the restaurant by id
+//         const restaurant = await RestaurantSchema.findById(id);
+//         if(!restaurant){
+//             return res.status(404).json({ message: "Restaurant not found" });
+//         }
+
+//         //check if the logged in user is the owner or an admin
+//         if (restaurant.owner.toString() !== userId && userRole !== 'admin'){
+//             return res.status(403).json({ message: "You can only delete your own restaurant"});
+//         }
+
+//         //delete restaurant
+//         await RestaurantSchema.findByIdAndDelete(id);
+
+
+//         res.status(200).json({ message: "Restuant deleted successfully"});
+//     }catch (err){
+//         res.status(500).json({ message: "Error deleting restaurant", err: err.message});
+//     }
+// }
 //get Restaurant by owner
 const getRestaurantByOwner = async (req, res) => {
     try{

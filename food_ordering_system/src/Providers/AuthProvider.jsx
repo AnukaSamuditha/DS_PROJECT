@@ -1,12 +1,28 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axiosInstance from "@/axiosConfig"; // custom axios with credentials
+import axiosInstance from "@/axiosConfig"; // axios with credentials
 
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true); // ✅ loading initially
 
-  // 🚪 Logout: clear user and cookie
+  // 🔐 Login (manual or fetch from server)
+  const login = async (userData = null) => {
+    try {
+      if (userData) {
+        setUser(userData); // ✅ use provided user
+      } else {
+        const res = await axiosInstance.get("/users/get-user");
+        setUser(res.data.user);
+      }
+    } catch (error) {
+      console.error("Login failed", error);
+      setUser(null);
+    }
+  };
+
+  // 🚪 Logout
   const logout = async () => {
     try {
       await axiosInstance.post("/users/logout");
@@ -16,35 +32,30 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  // 🔐 Login: set user based on backend cookie
-  const login = async () => {
-    try {
-      const res = await axiosInstance.get("/users/get-user");
-      setUser(res.data.user);
-    } catch (error) {
-      console.error("Login failed: could not fetch user info", error);
-      setUser(null);
-    }
-  };
-
-  // ⏳ On app load, check if cookie/session is valid
+  // ⏳ On first app load: try to get logged-in user
   useEffect(() => {
-    axiosInstance
-      .get("/users/get-user")
-      .then((res) => setUser(res.data.user))
-      .catch(() => setUser(null));
+    const fetchUser = async () => {
+      try {
+        const res = await axiosInstance.get("/users/get-user");
+        setUser(res.data.user);
+      } catch (err) {
+        setUser(null); // no active session
+      } finally {
+        setAuthLoading(false); // ✅ done checking
+      }
+    };
+
+    fetchUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, authLoading }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export const useAuth = () => useContext(AuthContext);
-
-
 
 
 

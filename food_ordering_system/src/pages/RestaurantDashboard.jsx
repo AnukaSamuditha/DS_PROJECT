@@ -1,27 +1,25 @@
 import { useEffect, useState } from "react";
-import axiosInstance from "@/axiosConfig"; // ✅ axios with credentials
+import axiosInstance from "@/axiosConfig";
 import { useAuth } from "../Providers/AuthProvider";
 import { useNavigate } from "react-router";
 import RestaurantCard from "../components/RestaurantCard";
+// import { toast } from "react-toastify"; // ✅ Optional toast support
 
 export default function RestaurantDashboard() {
-  const { user } = useAuth();
-  const [restaurants, setRestaurants] = useState([]);
-  const [error, setError] = useState("");
-  const [search, setSearch] = useState("");
+  const { user, authLoading } = useAuth();
   const navigate = useNavigate();
+
+  const [restaurants, setRestaurants] = useState([]);
+  const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
 
   const backendURL = import.meta.env.VITE_BACKEND_PREFIX;
 
-  const fetchRestaurants = async () => {
-    try {
-      const res = await axiosInstance.get("/restaurants/owned-restaurants");
-      setRestaurants(res.data.restaurants || []);
-    } catch (err) {
-      setError("Failed to fetch restaurants");
-      console.error(err);
+  useEffect(() => {
+    if (!authLoading && (!user || user.role !== "restaurantOwner")) {
+      navigate("/signin");
     }
-  };
+  }, [user, authLoading, navigate]);
 
   useEffect(() => {
     if (user?.role === "restaurantOwner") {
@@ -29,12 +27,23 @@ export default function RestaurantDashboard() {
     }
   }, [user]);
 
+  const fetchRestaurants = async () => {
+    try {
+      const res = await axiosInstance.get("/restaurants/owned-restaurants");
+      setRestaurants(res.data.restaurants || []);
+      setError("");
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError("Failed to fetch restaurants.");
+    }
+  };
+
   const handleAvailabilityToggle = async (id) => {
     try {
       await axiosInstance.patch(`/restaurants/availability-restaurant/${id}`);
       fetchRestaurants();
     } catch (err) {
-      console.error("Error toggling availability:", err);
+      console.error("Toggle availability failed:", err);
     }
   };
 
@@ -46,7 +55,7 @@ export default function RestaurantDashboard() {
       await axiosInstance.delete(`/restaurants/restaurant-delete/${id}`);
       fetchRestaurants();
     } catch (err) {
-      console.error("Error deleting restaurant:", err);
+      console.error("Delete failed:", err);
     }
   };
 
@@ -54,24 +63,32 @@ export default function RestaurantDashboard() {
     r.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  return (
-    <div className="p-4 text-white">
-      <h2 className="text-2xl font-bold mb-4">My Restaurants</h2>
+  if (authLoading) return <div className="p-6 text-gray-600">Loading...</div>;
 
+  return (
+    <div className="p-6 max-w-7xl mx-auto space-y-8">
+      {/* Heading */}
+      <h2 className="text-3xl font-bold text-gray-900">My Restaurants</h2>
+
+      {/* Search Box */}
+      <div>
+        <input
+          type="text"
+          placeholder="Search your restaurants..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 placeholder-gray-400 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
+        />
+      </div>
+
+      {/* Error */}
       {error && <p className="text-red-500">{error}</p>}
 
-      <input
-        type="text"
-        placeholder="Search your restaurants..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full mb-6 px-3 py-2 rounded border border-zinc-600 bg-zinc-800 text-white placeholder-zinc-400"
-      />
-
+      {/* Restaurants List */}
       {filteredRestaurants.length === 0 ? (
-        <p className="text-zinc-400">No restaurants found.</p>
+        <p className="text-gray-500">No restaurants found.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredRestaurants.map((res) => (
             <RestaurantCard
               key={res._id}
@@ -93,6 +110,121 @@ export default function RestaurantDashboard() {
 
 
 
+
+
+
+
+//og
+// import { useEffect, useState } from "react";
+// import axiosInstance from "@/axiosConfig";
+// import { useAuth } from "../Providers/AuthProvider";
+// import { useNavigate } from "react-router";
+// import RestaurantCard from "../components/RestaurantCard";
+// // import { toast } from "react-toastify"; // ✅ Optional toast support
+
+// export default function RestaurantDashboard() {
+//   const { user, authLoading } = useAuth();
+//   const navigate = useNavigate();
+
+//   const [restaurants, setRestaurants] = useState([]);
+//   const [search, setSearch] = useState("");
+//   const [error, setError] = useState("");
+
+//   const backendURL = import.meta.env.VITE_BACKEND_PREFIX;
+
+//   // ⛔ Redirect if not authorized (after auth check completes)
+//   useEffect(() => {
+//     if (!authLoading && (!user || user.role !== "restaurantOwner")) {
+//       navigate("/signin");
+//     }
+//   }, [user, authLoading, navigate]);
+
+//   // ✅ Fetch restaurants after user is validated
+//   useEffect(() => {
+//     if (user?.role === "restaurantOwner") {
+//       fetchRestaurants();
+//     }
+//   }, [user]);
+
+//   const fetchRestaurants = async () => {
+//     try {
+//       const res = await axiosInstance.get("/restaurants/owned-restaurants");
+//       setRestaurants(res.data.restaurants || []);
+//       setError("");
+//     } catch (err) {
+//       console.error("Fetch error:", err);
+//       setError("Failed to fetch restaurants.");
+//       // toast.error("Failed to fetch restaurants.");
+//     }
+//   };
+
+//   const handleAvailabilityToggle = async (id) => {
+//     try {
+//       await axiosInstance.patch(`/restaurants/availability-restaurant/${id}`);
+//       fetchRestaurants();
+//       // toast.success("Availability updated.");
+//     } catch (err) {
+//       console.error("Toggle availability failed:", err);
+//       // toast.error("Failed to update availability.");
+//     }
+//   };
+
+//   const handleDelete = async (id) => {
+//     const confirmDelete = window.confirm("Are you sure you want to delete this restaurant?");
+//     if (!confirmDelete) return;
+
+//     try {
+//       await axiosInstance.delete(`/restaurants/restaurant-delete/${id}`);
+//       fetchRestaurants();
+//       // toast.success("Restaurant deleted.");
+//     } catch (err) {
+//       console.error("Delete failed:", err);
+//       // toast.error("Failed to delete restaurant.");
+//     }
+//   };
+
+//   const filteredRestaurants = restaurants.filter((r) =>
+//     r.name.toLowerCase().includes(search.toLowerCase())
+//   );
+
+//   if (authLoading) return <div className="text-white p-6">Loading...</div>;
+
+//   return (
+//     <div className="p-4 text-white">
+//       <h2 className="text-2xl font-bold mb-4">My Restaurants</h2>
+
+//       {error && <p className="text-red-500 mb-2">{error}</p>}
+
+//       <input
+//         type="text"
+//         placeholder="Search your restaurants..."
+//         value={search}
+//         onChange={(e) => setSearch(e.target.value)}
+//         className="w-full mb-6 px-3 py-2 rounded border border-zinc-600 bg-zinc-800 text-white placeholder-zinc-400"
+//       />
+
+//       {filteredRestaurants.length === 0 ? (
+//         <p className="text-zinc-400">No restaurants found.</p>
+//       ) : (
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+//           {filteredRestaurants.map((res) => (
+//             <RestaurantCard
+//               key={res._id}
+//               restaurant={res}
+//               backendURL={backendURL}
+//               role="restaurantOwner"
+//               showMap={false}
+//               onEdit={() => navigate(`/edit-restaurant/${res._id}`)}
+//               onDelete={() => handleDelete(res._id)}
+//               onToggleAvailability={() => handleAvailabilityToggle(res._id)}
+//               onManageMenu={() => navigate(`/restaurant/${res._id}/menu-items`)}
+//             />
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
 
 
 

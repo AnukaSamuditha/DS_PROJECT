@@ -55,27 +55,126 @@ export default function RestaurantMenuItems() {
   }, [id]);
 
   return (
-    <div className="p-4 text-white">
-      <h2 className="text-2xl font-bold mb-4">Manage Menu Items</h2>
+    <div className="p-6 min-h-screen bg-gray-50 flex flex-col items-center">
+      <div className="w-full max-w-7xl space-y-8">
+        {/* Page Heading */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <h2 className="text-3xl font-bold text-gray-900">Manage Menu Items</h2>
+          <button
+            onClick={handleAdd}
+            className="bg-black hover:bg-gray-800 text-white px-5 py-2 rounded-lg font-semibold transition"
+          >
+            + Add Menu Item
+          </button>
+        </div>
 
-      <button
-        onClick={handleAdd}
-        className="bg-blue-600 text-white px-4 py-2 rounded mb-6"
-      >
-        + Add Menu Item
-      </button>
-
-      <MenuSection
-        menuItems={items}
-        backendURL={backendURL}
-        role="restaurantOwner"
-        onEdit={handleEdit}
-        onDelete={deleteItem}
-        onToggleAvailability={toggleAvailability}
-      />
+        {/* Menu Section */}
+        <MenuSection
+          menuItems={items}
+          backendURL={backendURL}
+          role="restaurantOwner"
+          onEdit={handleEdit}
+          onDelete={deleteItem}
+          onToggleAvailability={toggleAvailability}
+        />
+      </div>
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//og
+// import { useEffect, useState } from "react";
+// import axiosInstance from "@/axiosConfig"; // ✅ cookie-based axios
+// import { useParams, useNavigate } from "react-router";
+// import { useAuth } from "../Providers/AuthProvider";
+// import MenuSection from "../components/MenuSection";
+
+// export default function RestaurantMenuItems() {
+//   const { id } = useParams(); // Restaurant ID
+//   const { user } = useAuth();
+//   const navigate = useNavigate();
+//   const [items, setItems] = useState([]);
+
+//   const backendURL = import.meta.env.VITE_BACKEND_PREFIX;
+
+//   const fetchMenuItems = async () => {
+//     try {
+//       const res = await axiosInstance.get(`/MenuItems/restaurant-menuItems/${id}`);
+//       setItems(res.data.menuItems || []);
+//     } catch (err) {
+//       console.error("Error fetching menu items:", err);
+//     }
+//   };
+
+//   const toggleAvailability = async (itemId) => {
+//     try {
+//       await axiosInstance.patch(`/MenuItems/availability-menuItem/${itemId}`);
+//       fetchMenuItems(); // Refresh list
+//     } catch (err) {
+//       console.error("Toggle error:", err);
+//     }
+//   };
+
+//   const deleteItem = async (itemId) => {
+//     const confirmDelete = window.confirm("Are you sure you want to delete this item?");
+//     if (!confirmDelete) return;
+
+//     try {
+//       await axiosInstance.delete(`/MenuItems/delete-menuItem/${itemId}`);
+//       fetchMenuItems(); // Refresh list
+//     } catch (err) {
+//       console.error("Delete error:", err);
+//     }
+//   };
+
+//   const handleEdit = (itemId) => {
+//     navigate(`/restaurant/${id}/menu-items/edit/${itemId}`);
+//   };
+
+//   const handleAdd = () => {
+//     navigate(`/restaurant/${id}/menu-items/add`);
+//   };
+
+//   useEffect(() => {
+//     fetchMenuItems();
+//   }, [id]);
+
+//   return (
+//     <div className="p-4 text-white">
+//       <h2 className="text-2xl font-bold mb-4">Manage Menu Items</h2>
+
+//       <button
+//         onClick={handleAdd}
+//         className="bg-blue-600 text-white px-4 py-2 rounded mb-6"
+//       >
+//         + Add Menu Item
+//       </button>
+
+//       <MenuSection
+//         menuItems={items}
+//         backendURL={backendURL}
+//         role="restaurantOwner"
+//         onEdit={handleEdit}
+//         onDelete={deleteItem}
+//         onToggleAvailability={toggleAvailability}
+//       />
+//     </div>
+//   );
+// }
 
 
 
