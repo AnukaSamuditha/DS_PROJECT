@@ -1,13 +1,13 @@
 const Order = require('../Models/orderModel');
 
+
+
 exports.placeOrder = async (req, res) => {
   try {
-    //console.log("Authenticated user from token:", req.user);
     const orderData = req.body;
     const totalAmount = orderData.amount + (orderData.deliveryFee || 0);
 
-    
-    const user = req.user.user;
+    const user = req.user; // ✅ FIXED
 
     const newOrder = new Order({
       user: {
@@ -31,9 +31,11 @@ exports.placeOrder = async (req, res) => {
   }
 };
 
+
+
 exports.getOrdersByUser = async (req, res) => {
   try {
-    const userId = req.user.user.id; // authenticated user
+    const userId = req.user.id; // authenticated user
     const orders = await Order.find({ 'user.id': userId });
 
     res.json({ orders });

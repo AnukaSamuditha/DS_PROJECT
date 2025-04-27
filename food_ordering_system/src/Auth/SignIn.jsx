@@ -1,5 +1,10 @@
 
 
+
+
+
+
+
 import Label from "@/components/ui/label";
 import InputField from "@/components/ui/InputField";
 import SubmitButton from "@/components/ui/SubmitButton";
@@ -10,12 +15,9 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@/Providers/AuthProvider";
 import { useNavigate } from "react-router";
+import { useState } from "react";
 
 const schema = z.object({
-  username: z
-    .string()
-    .min(4, "Username must be at least 4 characters")
-    .max(10, "Username cannot be more than 10 characters"),
   email: z.string().email("Invalid email address"),
   password: z
     .string()
@@ -23,8 +25,7 @@ const schema = z.object({
     .max(16, "Password cannot be more than 16 characters"),
 });
 
-export default function SignUp() {
-  const navigate = useNavigate();
+export default function SignIn() {
   const {
     register,
     handleSubmit,
@@ -33,36 +34,39 @@ export default function SignUp() {
   } = useForm({ resolver: zodResolver(schema), mode: "onChange" });
 
   const { login } = useAuth();
+  const navigate = useNavigate();
+  const [loginError, setLoginError] = useState("");
 
   const { mutate } = useMutation({
     mutationFn: async (data) => {
+      // ✅ Send credentials (email, password) with cookie support
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/users/create-user`,
-        data
+        `${import.meta.env.VITE_BACKEND_PREFIX}/users/login`,
+        data,
+        { withCredentials: true } // ✅ save JWT in cookie
       );
       return res;
     },
-    onSuccess: (res) => {
-      console.log("User has been created successfully", res);
-      login(null, res.data.token); // ✅ only pass token
+    onSuccess: () => {
+      console.log("User logged in successfully");
+      login(); // ✅ Just call login, cookie handles the session
       reset();
-      navigate("/"); // ✅ redirect to homepage
+      navigate("/"); // redirect after login
     },
     onError: (error) => {
-      if (error.response?.status === 409) {
-        alert("A user with this email or username already exists.");
+      console.error("Error in logging the user", error);
+      if (error.response?.status === 400 || error.response?.status === 404) {
+        setLoginError("Invalid email or password");
       } else {
-        alert("Something went wrong. Please try again.");
+        setLoginError("Something went wrong. Please try again.");
       }
-      console.log("Error in creating the user", error);
-      reset();
     },
   });
 
   const onSubmit = (formData) => {
+    setLoginError(""); // clear previous errors
     mutate(formData);
   };
-  console.log(import.meta.env.VITE_BACKEND_PREFIX); // add this in SignUp.jsx
 
   return (
     <div className="w-full h-screen flex justify-center items-center">
@@ -72,22 +76,11 @@ export default function SignUp() {
       >
         <div className="flex flex-col">
           <h5 className="text-white text-2xl font-medium text-left mb-1">
-            Signup
+            Sign In
           </h5>
           <h5 className="text-zinc-400 text-sm mb-3">
-            Enter your details to get started!
+            Enter your credentials to log in!
           </h5>
-        </div>
-
-        <div className="w-full flex flex-col gap-1">
-          <Label name="username" title="Username" />
-          <InputField
-            type="text"
-            name="username"
-            placeholder="Enter unique username"
-            register={register}
-            error={errors.username?.message}
-          />
         </div>
 
         <div className="w-full flex flex-col gap-1">
@@ -112,35 +105,20 @@ export default function SignUp() {
           />
         </div>
 
-        <div className="flex justify-between items-center w-full h-[2.5rem]">
-          <Label name="role" title="Sign Up as" />
-          <br />
-          <select
-            {...register("role")}
-            className="bg-transparent w-[60%] rounded-[8px] h-full text-zinc-300 text-sm placeholder-zinc-400 focus:border-none border border-zinc-800 text-center"
-          >
-            <option value="regular" className="text-white bg-black">
-              Regular
-            </option>
-            <option value="rider" className="text-white bg-black">
-              Rider
-            </option>
-            <option value="restaurantOwner" className="text-white bg-black">
-              Restaurant Owner
-            </option>
-            <option value="admin" className="text-white bg-black">
-              Admin
-            </option>
-          </select>
-        </div>
+        {/* Show login error if exists */}
+        {loginError && (
+          <p className="text-red-500 text-sm font-medium text-center">
+            {loginError}
+          </p>
+        )}
 
         <SubmitButton
-          title="Submit"
+          title="Login"
           isSubmitting={isSubmitting}
           isValid={isValid}
         />
         <p className="text-sm text-center text-white">
-          Already have an account? <span className="underline">Log in</span>
+          Don't have an account? <span className="underline">Create one</span>
         </p>
       </form>
     </div>

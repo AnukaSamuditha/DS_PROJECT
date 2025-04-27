@@ -1,13 +1,9 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
-//console.log("JWT_SECRET:", JWT_SECRET);
 
 const authenticate = async (req, res, next) => {
-  const token = req.cookies.token
-  // const token = await req.headers.authorization?.split(" ")[1];
-  console.log(token);
-  
+  const token = req.cookies.token;
 
   if (!token) {
     return res.status(401).json({
@@ -22,10 +18,11 @@ const authenticate = async (req, res, next) => {
           message: "Invalid token!",
           error: error.message,
         });
-      } else {
-        req.user = decoded.user;
-        next();
       }
+
+      
+      req.user = decoded.user;
+      next();
     });
   } catch (error) {
     console.log("Something is wrong with the auth middleware", error.message);
@@ -35,23 +32,26 @@ const authenticate = async (req, res, next) => {
 
 const authorize = (roles = []) => {
   return (req, res, next) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({
+        message: "Access Denied, no token provided",
+      });
+    }
+
     try {
-      const token = req.headers.authorization?.split(" ")[1];
-      if (!token) {
-        return res.status(401).json({
-          message: "Access Denied, no token provided",
-        });
-      }
-
       const decoded = jwt.verify(token, JWT_SECRET);
-      req.user = decoded;
+      const user = decoded.user;
 
-      if (!roles.includes(req.user.user.role)) {
-        return res.status(401).json({
-          message: "Access Denied, no permission to access the resource",
+      if (!roles.includes(user.role)) {
+        return res.status(403).json({
+          message: "Access Denied, insufficient permissions",
         });
       }
 
+      // ✅ Store decoded user
+      req.user = user;
       next();
     } catch (error) {
       res.status(401).json({
@@ -63,3 +63,11 @@ const authorize = (roles = []) => {
 };
 
 module.exports = { authenticate, authorize };
+
+
+
+
+
+
+
+

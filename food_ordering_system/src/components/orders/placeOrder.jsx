@@ -1,127 +1,125 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import InputField from "@/components/ui/InputField";
+import SubmitButton from "@/components/ui/SubmitButton";
+import Label from "@/components/ui/label";
+import { useAuth } from "@/Providers/AuthProvider";
 
-const PlaceOrderPage = () => {
-  const [order, setOrder] = useState({
-    user: {
-      location: {
-        lat: '',
-        lng: '',
-        address: '',
-      },
-    },
-    shop: {
-      id: '',
-      name: '',
-      location: {
-        lat: '',
-        lng: '',
-        address: '',
-      },
-    },
-    items: [
-      { name: '', quantity: 1, price: 0 }
-    ],
-    amount: 0,
-    deliveryFee: 0,
-    paymentMethod: 'cash_on_delivery',
-    notes: ''
+// ✅ Zod Schema with preprocess for number fields
+const schema = z.object({
+  shopId: z.string().min(1, "Shop ID is required"),
+  shopName: z.string().min(1, "Shop name is required"),
+  itemName: z.string().min(1, "Item name is required"),
+  quantity: z.preprocess((val) => Number(val), z.number({ required_error: "Quantity is required" }).min(1, "Must be at least 1")),
+  price: z.preprocess((val) => Number(val), z.number({ required_error: "Price is required" }).min(1, "Must be at least 1")),
+  amount: z.preprocess((val) => Number(val), z.number({ required_error: "Amount is required" }).min(1, "Must be at least 1")),
+  deliveryFee: z.preprocess((val) => Number(val), z.number({ required_error: "Delivery fee is required" }).min(0, "Cannot be negative")),
+  paymentMethod: z.enum(["cash_on_delivery", "card", "online"]),
+});
+
+export default function PlaceOrderPage() {
+  const { user } = useAuth();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting, isValid },
+  } = useForm({
+    resolver: zodResolver(schema),
+    mode: "onChange",
   });
 
-  const [message, setMessage] = useState('');
-  const token = localStorage.getItem('token'); // JWT token from login
-  console.log(token);
-  
+  const mutation = useMutation({
+    mutationFn: async (data) => {
+      const orderData = {
+        shop: {
+          id: data.shopId,
+          name: data.shopName,
+        },
+        items: [
+          {
+            name: data.itemName,
+            quantity: data.quantity,
+            price: data.price,
+          },
+        ],
+        amount: data.amount,
+        deliveryFee: data.deliveryFee,
+        paymentMethod: data.paymentMethod,
+      };
 
-  // Recalculate total amount
-  const updateAmount = () => {
-    const subtotal = order.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
-    setOrder({ ...order, amount: subtotal });
-  };
-
-  const handleChange = (field, value) => {
-    setOrder({ ...order, [field]: value });
-  };
-
-  const handleItemChange = (index, field, value) => {
-    const updatedItems = [...order.items];
-    updatedItems[index][field] = field === 'quantity' || field === 'price' ? Number(value) : value;
-    setOrder({ ...order, items: updatedItems });
-    updateAmount();
-  };
-
-  const addItem = () => {
-    setOrder({ ...order, items: [...order.items, { name: '', quantity: 1, price: 0 }] });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    updateAmount();
-
-    try {
-      const res = await axios.post(
-        'http://localhost:6060/orders',
-        order,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_PREFIX}/orders`,
+        orderData,
+        { withCredentials: true } // ✅ include cookies
       );
-      setMessage('✅ Order placed successfully!');
-      console.log('Order placed:', res.data);
-    } catch (error) {
-      console.error('Order failed:', error.response?.data || error.message);
-      setMessage('❌ Failed to place order');
-    }
+
+      return response.data;
+    },
+    onSuccess: () => {
+      alert("✅ Order placed successfully!");
+      reset();
+    },
+    onError: (err) => {
+      console.error("❌ Failed to place order:", err);
+      alert("Failed to place order: " + err.response?.data?.message || err.message);
+    },
+  });
+
+  const onSubmit = (formData) => {
+    mutation.mutate(formData);
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '700px', margin: 'auto', background:"white"}}>
-      <h2>🛒 Place Order</h2>
-      <form onSubmit={handleSubmit}>
-        <h3>Shop Info</h3>
-        <input placeholder="Shop ID" value={order.shop.id} onChange={(e) => handleChange('shop', { ...order.shop, id: e.target.value })} />
-        <input placeholder="Shop Name" value={order.shop.name} onChange={(e) => handleChange('shop', { ...order.shop, name: e.target.value })} />
-        <input placeholder="Shop Address" value={order.shop.location.address} onChange={(e) => handleChange('shop', {
-          ...order.shop,
-          location: { ...order.shop.location, address: e.target.value }
-        })} />
+    <div className="w-full h-screen flex justify-center items-center bg-black">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-md flex flex-col gap-4 border border-gray-200 p-6 rounded-lg shadow bg-black"
+      >
+        <h2 className="text-xl font-bold text-center text-white">Place Order</h2>
 
-        <h3>Delivery Location</h3>
-        <input placeholder="Address" value={order.user.location.address} onChange={(e) =>
-          setOrder({
-            ...order,
-            user: { ...order.user, location: { ...order.user.location, address: e.target.value } }
-          })} />
+        <Label title="Shop ID" name="shopId" />
+        <InputField name="shopId" type="text" register={register} error={errors.shopId?.message} />
 
-        <h3>Items</h3>
-        {order.items.map((item, index) => (
-          <div key={index}>
-            <input placeholder="Item Name" value={item.name} onChange={(e) => handleItemChange(index, 'name', e.target.value)} />
-            <input type="number" placeholder="Qty" value={item.quantity} onChange={(e) => handleItemChange(index, 'quantity', e.target.value)} />
-            <input type="number" placeholder="Price" value={item.price} onChange={(e) => handleItemChange(index, 'price', e.target.value)} />
-          </div>
-        ))}
-        <button type="button" onClick={addItem}>➕ Add Item</button>
-        {/* <button type='button' onClick={removeItem}></button> */}
+        <Label title="Shop Name" name="shopName" />
+        <InputField name="shopName" type="text" register={register} error={errors.shopName?.message} />
 
-        <h3>Delivery & Payment</h3>
-        <input type="number" placeholder="Delivery Fee" value={order.deliveryFee} onChange={(e) => handleChange('deliveryFee', Number(e.target.value))} />
-        <select value={order.paymentMethod} onChange={(e) => handleChange('paymentMethod', e.target.value)}>
+        <Label title="Item Name" name="itemName" />
+        <InputField name="itemName" type="text" register={register} error={errors.itemName?.message} />
+
+        <Label title="Quantity" name="quantity" />
+        <InputField name="quantity" type="number" register={register} error={errors.quantity?.message} />
+
+        <Label title="Price" name="price" />
+        <InputField name="price" type="number" register={register} error={errors.price?.message} />
+
+        <Label title="Amount" name="amount" />
+        <InputField name="amount" type="number" register={register} error={errors.amount?.message} />
+
+        <Label title="Delivery Fee" name="deliveryFee" />
+        <InputField name="deliveryFee" type="number" register={register} error={errors.deliveryFee?.message} />
+
+        <Label title="Payment Method" name="paymentMethod" />
+        <select {...register("paymentMethod")} className="border rounded px-2 py-1 bg-white">
           <option value="cash_on_delivery">Cash on Delivery</option>
           <option value="card">Card</option>
           <option value="online">Online</option>
         </select>
 
-        <textarea placeholder="Notes (optional)" value={order.notes} onChange={(e) => handleChange('notes', e.target.value)} />
-
-        <button type="submit" style={{ marginTop: '1rem', color:"blue"}}>🚀 Place Order</button>
+        <SubmitButton title="Place Order" isSubmitting={isSubmitting} isValid={isValid} />
       </form>
-      {message && <p style={{ marginTop: '1rem' }}>{message}</p>}
     </div>
   );
-};
+}
 
-export default PlaceOrderPage;
+
+
+
+
+
+
+

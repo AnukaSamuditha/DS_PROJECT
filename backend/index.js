@@ -15,7 +15,7 @@ app.use(cors({
 app.use(cookieParser())
 
 app.use(express.json());
-app.use(cors());
+//app.use(cors());
 app.use("/users",userRoutes);
 app.use('/orders', orderRoutes);
 
@@ -30,3 +30,4 @@ mongoose
   .catch((error) => {
     console.log("Error connecting with the database", error);
   });
+
