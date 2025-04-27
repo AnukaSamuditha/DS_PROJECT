@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   GoogleMap,
   MarkerF,
@@ -7,10 +7,13 @@ import {
   OverlayView,
   DirectionsRenderer,
 } from "@react-google-maps/api";
+import ScootyMarker from '../assets/scooty_marker.png';
+import ProfilePicture from '../assets/profile_dummy.jpg';
+import { LocationMarker } from "./ui/LocationMarker";
 
 const containerStyle = {
   width: "100%",
-  height: "600px",
+  height: "550px",
 };
 
 //This can be used when user provides the source it should center the map according
@@ -30,19 +33,21 @@ const destination = {
   lng: 79.8612,
 };
 
-export default function GoogleMapContainer() {
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_API,
-  });
+export default function GoogleMapContainer({riders,isRiderMap,isLoaded}) {
+  
+  // const { isLoaded } = useJsApiLoader({
+  //   id: "google-map-script",
+  //   googleMapsApiKey: import.meta.env.VITE_GOOGLE_API,
+  // });
 
   const [map, setMap] = React.useState(null);
   const [directionRoutePoints, setDirectionRoutePoints] = React.useState(null);
+  const [availableRiders,setAvailableRiders] = useState(riders || []);
 
   const onLoad = React.useCallback(function callback(map) {
     const bounds = new window.google.maps.LatLngBounds();
     bounds.extend(center);
-    map.fitBounds(bounds);
+    map.setZoom(13);//changed fitBounds to setZoom
 
     setMap(map);
   }, []);
@@ -57,41 +62,47 @@ export default function GoogleMapContainer() {
     }
   }, [isLoaded, source, destination]);
 
+
   const getRoute = () => {
     if (!isLoaded || !window.google || !window.google.maps) return;
 
-    const DirectionsService = new window.google.maps.DirectionsService();
+    // const DirectionsService = new window.google.maps.DirectionsService();
 
-    DirectionsService.route(
-      {
-        origin: { lat: source.lat, lng: source.lng },
-        destination: { lat: destination.lat, lng: destination.lng },
-        travelMode: window.google.maps.TravelMode.DRIVING,
-      },
-      (result, status) => {
-        console.log("Route result:", result);
-        if (status === window.google.maps.DirectionsStatus.OK) {
-          console.log("result", result);
-          setDirectionRoutePoints(result);
-        } else {
-          console.log("Error getting the route. Status:", status);
-        }
-      }
-    );
+    // DirectionsService.route(
+    //   {
+    //     origin: { lat: source.lat, lng: source.lng },
+    //     destination: { lat: destination.lat, lng: destination.lng },
+    //     travelMode: window.google.maps.TravelMode.DRIVING,
+    //   },
+    //   (result, status) => {
+    //     console.log("Route result:", result);
+    //     if (status === window.google.maps.DirectionsStatus.OK) {
+    //       console.log("result", result);
+    //       setDirectionRoutePoints(result);
+    //     } else {
+    //       console.log("Error getting the route. Status:", status);
+    //     }
+    //   }
+    // );
   };
-
+  if(availableRiders.length>0){
+    console.log(availableRiders)
+  }
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={center}
-      zoom={10}
+      center={source}
+      zoom={13}
       onLoad={onLoad}
       onUnmount={onUnmount}
       options={{
         mapId: import.meta.env.VITE_MAP_ID,
+        mapTypeControl:false
+        
       }}
+      
     >
-      <MarkerF position={{ lat: source.lat, lng: source.lng }}>
+      {/* <MarkerF position={{ lat: source.lat, lng: source.lng }}>
         <OverlayViewF
           position={{ lat: source.lat, lng: source.lng }}
           mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
@@ -100,9 +111,9 @@ export default function GoogleMapContainer() {
             <h1 className="text-sm font-semibold text-blue-600">Home</h1>
           </div>
         </OverlayViewF>
-      </MarkerF>
+      </MarkerF> */}
 
-      <MarkerF position={{ lat: destination.lat, lng: destination.lng }}>
+      {/* <MarkerF position={{ lat: destination.lat, lng: destination.lng }}>
         <OverlayViewF
           position={{ lat: destination.lat, lng: destination.lng }}
           mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
@@ -111,9 +122,24 @@ export default function GoogleMapContainer() {
             <h1 className="text-sm font-semibold text-blue-600">Destination</h1>
           </div>
         </OverlayViewF>
-      </MarkerF>
+      </MarkerF> */}
 
-      {directionRoutePoints && (
+      {isRiderMap && riders.map((driver) => (
+        <MarkerF key={driver.riderId} position={{ lat: Number(driver.lat), lng: Number(driver.lng) }}>
+          <OverlayViewF
+            position={{ lat: Number(driver.lat), lng: Number(driver.lng) }}
+            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+          >
+            <LocationMarker/>
+            {/* <div className="bg-black w-auto max-w-[120px] h-[40px]  rounded-full flex justify-start items-center px-1.5 py-1.5 gap-2 pr-3">
+              <img src={ProfilePicture} className="w-[30px] h-[30px] rounded-full"/>
+              <h1 className="text-xs text-white font-semibold tracking-tight max-w-[120px] truncate overflow-hidden whitespace-nowrap">{driver.riderName}</h1>
+            </div> */}
+          </OverlayViewF>
+        </MarkerF>
+      ))}
+
+      {/* {directionRoutePoints && (
         <DirectionsRenderer
           directions={directionRoutePoints}
           options={{
@@ -124,7 +150,8 @@ export default function GoogleMapContainer() {
             },
           }}
         />
-      )}
+      )} */}
+      
     </GoogleMap>
   ) : (
     <></>

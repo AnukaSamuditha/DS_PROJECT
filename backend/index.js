@@ -1,33 +1,49 @@
-require("dotenv").config();
-const cookieParser = require("cookie-parser")
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-const orderRoutes = require('./Routes/orderRoutes');
 const userRoutes = require("./Routes/userRoutes");
-
+const {connectRedis} = require('./Auth/redisClient');
+const {Server} = require('socket.io')
+const http = require('http');
+const server = http.createServer(app);
+const {socketHandler} = require('./Socket/socketHandler');
+const deliveryRoutes = require('./Routes/deliveryRoutes');
+const orderRoutes = require("./Routes/orderRoutes")
+const cookieParser = require('cookie-parser');
+require("dotenv").config();
 
 app.use(cors({
-  origin:"http://localhost:5173",
+  origin:process.env.FRONTEND_PREFIX,
   credentials:true
-}))
-app.use(cookieParser())
+}));
 
+app.use(cookieParser());
 app.use(express.json());
-//app.use(cors());
 app.use("/users",userRoutes);
-app.use('/orders', orderRoutes);
+app.use("/delivers",deliveryRoutes);
+app.use("/orders",orderRoutes);
+
+const io = new Server(server,{
+  cors:{
+    origin:process.env.FRONTEND_PREFIX,
+    methods:["GET","POST"],
+    credentials:true
+  }
+})
+
+socketHandler(io);
 
 mongoose
-  .connect(process.env.MONGO_DB_URL)
+  .connect(process.env.DB_URL)
   .then(() => {
     console.log("Database connected successfully");
-    app.listen(process.env.PORT, () => {
+    connectRedis();
+
+    server.listen(process.env.PORT, () => {
       console.log(`Server is running on ${process.env.PORT}`);
     });
   })
   .catch((error) => {
     console.log("Error connecting with the database", error);
   });
-

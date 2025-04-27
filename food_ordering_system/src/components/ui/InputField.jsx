@@ -14,7 +14,7 @@ export default function InputField({
         type={type}
         value={value}
         onChange={onChange}
-        className={`w-full border border-zinc-800 bg-transparent rounded-[8px] h-[2.5rem]  text-zinc-300 text-sm p-4 placeholder-zinc-400 ${styles}`}
+        className={`w-full border border-[#E5E5E5] bg-transparent rounded-[8px] h-[2.5rem]  text-zinc-800 text-sm p-4 placeholder-zinc-400 ${styles}`}
         placeholder={placeholder}
         {...register(name)}
       />

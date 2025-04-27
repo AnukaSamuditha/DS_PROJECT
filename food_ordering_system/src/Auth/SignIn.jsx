@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 import Label from "@/components/ui/label";
 import InputField from "@/components/ui/InputField";
 import SubmitButton from "@/components/ui/SubmitButton";
@@ -14,8 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@/Providers/AuthProvider";
-import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
@@ -33,53 +25,53 @@ export default function SignIn() {
     formState: { errors, isSubmitting, isValid },
   } = useForm({ resolver: zodResolver(schema), mode: "onChange" });
 
-  const { login } = useAuth();
+  const {login} = useAuth();
   const navigate = useNavigate();
-  const [loginError, setLoginError] = useState("");
+  const location = useLocation();
+  const redirectedFrom = location.state || undefined;
 
-  const { mutate } = useMutation({
+  const { mutate,error } = useMutation({
     mutationFn: async (data) => {
-      // ✅ Send credentials (email, password) with cookie support
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_PREFIX}/users/login`,
-        data,
-        { withCredentials: true } // ✅ save JWT in cookie
+        data,{
+          withCredentials:true
+        }
       );
-      return res;
+      return res.data;
     },
-    onSuccess: () => {
-      console.log("User logged in successfully");
-      login(); // ✅ Just call login, cookie handles the session
+    onSuccess: (res) => {
+      console.log("User were logged in sucessfully", res);
+      login(res.data);
       reset();
-      navigate("/"); // redirect after login
+      redirectedFrom ? navigate(redirectedFrom) : navigate("/");
+      
     },
     onError: (error) => {
-      console.error("Error in logging the user", error);
-      if (error.response?.status === 400 || error.response?.status === 404) {
-        setLoginError("Invalid email or password");
-      } else {
-        setLoginError("Something went wrong. Please try again.");
-      }
+      console.log("Error in logging the user", error);
+      
     },
   });
 
   const onSubmit = (formData) => {
-    setLoginError(""); // clear previous errors
     mutate(formData);
   };
 
+  if(error){
+    console.log(error.message)
+  }
   return (
-    <div className="w-full h-screen flex justify-center items-center">
+    <div className="w-full h-screen flex justify-center items-center bg-white">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-lg:w-[90%] lg:w-[30%] h-auto flex flex-col mt-20 gap-4 rounded-xl border border-zinc-800 px-5 py-5"
+        className="w-full max-lg:w-[90%] lg:w-[30%] h-auto flex flex-col mt-20 gap-4 rounded-xl border border-[#E5E5E5] px-5 py-5"
       >
         <div className="flex flex-col">
-          <h5 className="text-white text-2xl font-medium text-left mb-1">
-            Sign In
+          <h5 className="text-black text-2xl font-semibold text-left mb-1">
+            SignIn
           </h5>
           <h5 className="text-zinc-400 text-sm mb-3">
-            Enter your credentials to log in!
+            Enter your credentials to logged in!
           </h5>
         </div>
 
@@ -90,7 +82,7 @@ export default function SignIn() {
             name="email"
             placeholder="xxxxx@email.com"
             register={register}
-            error={errors.email?.message}
+            error={errors.email?.message || error?.message}
           />
         </div>
 
@@ -101,23 +93,16 @@ export default function SignIn() {
             name="password"
             placeholder="*******"
             register={register}
-            error={errors.password?.message}
+            error={errors.password?.message || error?.message}
           />
         </div>
-
-        {/* Show login error if exists */}
-        {loginError && (
-          <p className="text-red-500 text-sm font-medium text-center">
-            {loginError}
-          </p>
-        )}
 
         <SubmitButton
           title="Login"
           isSubmitting={isSubmitting}
           isValid={isValid}
         />
-        <p className="text-sm text-center text-white">
+        <p className="text-sm text-center text-black">
           Don't have an account? <span className="underline">Create one</span>
         </p>
       </form>

@@ -1,10 +1,12 @@
-require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const cookieParser = require('cookie-parser');
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const authenticate = async (req, res, next) => {
-  const token = req.cookies.token;
 
+const authenticate = async (req, res, next) => {
+  //const token = await req.headers.authorization?.split(" ")[1];
+  const token = req.cookies.token;
+  
   if (!token) {
     return res.status(401).json({
       message: "No token available, authorization denied",
@@ -18,11 +20,10 @@ const authenticate = async (req, res, next) => {
           message: "Invalid token!",
           error: error.message,
         });
+      } else {
+        req.user = decoded.user;
+        next();
       }
-
-      
-      req.user = decoded.user;
-      next();
     });
   } catch (error) {
     console.log("Something is wrong with the auth middleware", error.message);
@@ -32,26 +33,25 @@ const authenticate = async (req, res, next) => {
 
 const authorize = (roles = []) => {
   return (req, res, next) => {
-    const token = req.cookies.token;
-
-    if (!token) {
-      return res.status(401).json({
-        message: "Access Denied, no token provided",
-      });
-    }
-
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      const user = decoded.user;
-
-      if (!roles.includes(user.role)) {
-        return res.status(403).json({
-          message: "Access Denied, insufficient permissions",
+      //const token = req.headers.authorization?.split(" ")[1];
+      const token = req.cookies.token;
+      if (!token) {
+        return res.status(401).json({
+          message: "Access Denied, no token provided",
         });
       }
 
-      // ✅ Store decoded user
-      req.user = user;
+      const decoded = jwt.verify(token, JWT_SECRET);
+      req.user = decoded;
+
+      if (!roles.includes(decoded.user?.role)) {
+        console.log("role ",decoded.user?.role)
+        return res.status(401).json({
+          message: "Access Denied, no permission to access the resource",
+        });
+      }
+
       next();
     } catch (error) {
       res.status(401).json({
@@ -63,11 +63,3 @@ const authorize = (roles = []) => {
 };
 
 module.exports = { authenticate, authorize };
-
-
-
-
-
-
-
-
