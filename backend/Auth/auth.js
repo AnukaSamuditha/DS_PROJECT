@@ -4,15 +4,11 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 
 const authenticate = async (req, res, next) => {
-<<<<<<< HEAD
+
   //const token = await req.headers.authorization?.split(" ")[1];
   const token = req.cookies.token;
   
-=======
-  // const token = req.headers.authorization?.split(" ")[1];
-  const token = req.cookies.token; // Get from cookies instead
-  console.log(token)
->>>>>>> payment-branch
+
   if (!token) {
     return res.status(401).json({
       message: "No token available, authorization denied",
@@ -40,11 +36,8 @@ const authenticate = async (req, res, next) => {
 const authorize = (roles = []) => {
   return (req, res, next) => {
     try {
-<<<<<<< HEAD
       //const token = req.headers.authorization?.split(" ")[1];
-=======
-      // const token = req.headers.authorization?.split(" ")[1];
->>>>>>> payment-branch
+
       const token = req.cookies.token;
       if (!token) {
         return res.status(401).json({
