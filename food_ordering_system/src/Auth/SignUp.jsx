@@ -38,7 +38,7 @@ export default function SignUp() {
   const { mutate } = useMutation({
     mutationFn: async (data) => {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/users`,
+        `${import.meta.env.VITE_BACKEND_PREFIX}/users/create-user`,
         data
       );
       return res;
