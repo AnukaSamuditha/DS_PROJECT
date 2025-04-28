@@ -456,7 +456,7 @@ export default function OrderStatus({ isLoaded }) {
             />
             {currentOrderStatus &&
               !isReceived &&
-              currentOrderStatus === "pending" && (
+              currentOrderStatus === "delivered" && (
                 <div className="w-full h-auto flex justify-start items-center mt-4">
                   <div className="w-full h-[3rem] bg-green-50 border border-green-200 rounded-xl flex justify-start items-center gap-3 px-4 py-3 ">
                     <input
@@ -471,8 +471,8 @@ export default function OrderStatus({ isLoaded }) {
                   </div>
                 </div>
               )}
-            <div className="w-full h-[3rem] flex justify-start items-center">
-              {currentOrderStatus !== "pending" && (
+            <div className="w-full h-[3rem] flex justify-start items-center pl-11">
+              {currentOrderStatus === "pending" && (
                 <button
                   onClick={() => setOrderLive((prev) => !prev)}
                   className="w-auto h-[30px] rounded-full bg-black flex justify-center items-center gap-3 px-3 py-4 text-white text-sm font-medium cursor-pointer"
@@ -485,16 +485,14 @@ export default function OrderStatus({ isLoaded }) {
                   />
                 </button>
               )}
-              {currentOrderStatus === "pending" && (
-                <div className="w-full h-auto flex justify-start items-center">
-                  <button
+              {currentOrderStatus === "delivered" && (
+                <button
                   onClick={() => setRateBoxOpen(true)}
                   disabled={isRiderArrived}
-                  className="w-auto h-[30px] rounded-full bg-green-400 flex justify-center items-center gap-2 px-4 py-4 text-black text-sm font-medium cursor-pointer"
+                  className="w-auto h-[30px] rounded-full bg-green-400 flex justify-center items-center gap-2 px-3 py-4 text-black text-sm font-medium cursor-pointer"
                 >
                   Rate <CircleCheck color="black" size={17} />
                 </button>
-                </div>
               )}
             </div>
           </div>

@@ -14,18 +14,18 @@ const redisClient = redis.createClient({
     
 });
 
-redisClient.on('connect', () => console.log('🔗 Connecting to Redis...'));
-redisClient.on('ready', () => console.log('✅ Redis is ready to use'));
-redisClient.on('error', err => console.error('❌ Redis Error:', err.message));
-redisClient.on('end', () => console.log('🚪 Redis connection closed'));
+redisClient.on('connect', () => console.log('Connecting to Redis...'));
+redisClient.on('ready', () => console.log('Redis is ready to use'));
+redisClient.on('error', err => console.error('Redis Error:', err.message));
+redisClient.on('end', () => console.log('Redis connection closed'));
 
 
 const connectRedis = async () => {
     try {
         await redisClient.connect();
-        console.log('🚀 Successfully connected to Redis');
+        console.log('Successfully connected to Redis');
     } catch (error) {
-        console.error('❌ Redis connection failed:', error.message);
+        console.error('Redis connection failed:', error.message);
     }
 };
 
@@ -33,10 +33,10 @@ const connectRedis = async () => {
 process.on('SIGINT', async () => {
     try {
         await redisClient.quit();
-        console.log('⚡ Redis client closed');
+        console.log('Redis client closed');
         process.exit(0);
     } catch (error) {
-        console.error('❌ Error closing Redis:', error.message);
+        console.error('Error closing Redis:', error.message);
         process.exit(1);
     }
 });
