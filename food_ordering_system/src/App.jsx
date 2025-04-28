@@ -14,7 +14,8 @@ import StartDelivery from "./components/StartDelivery";
 import RequireAuth from "./components/RequireAuth";
 import PreOrder from "./components/PreOrder";
 import GoogleMapProvider from "./Providers/GoogleMapProvider";
-
+import MyOrders from "./components/orders/MyOrders";
+import PlaceOrderPage from "./components/orders/placeOrder";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -22,6 +23,8 @@ const router = createBrowserRouter(
         <Route index element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/myOrders" element={<MyOrders/>}/>
+        <Route path="/placeOrder" element={<PlaceOrderPage/>}/>
       </Route>
 
       <Route
