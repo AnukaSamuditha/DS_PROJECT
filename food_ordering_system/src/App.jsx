@@ -21,7 +21,9 @@ import RestaurantDetails from "./pages/RestaurantDetails";
 import EditRestaurant from "./pages/EditRestaurant";
 import EditMenuItem from "./pages/EditMenuItem";
 import MenuItems from "./pages/MenuItems";
-import ProtectedRoute from "./components/ProtectedRoute"; // 🔐 Import
+// import ProtectedRoute from "./components/ProtectedRoute"; // 🔐 Import
+import RequireAuth from './components/RequireAuth';
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,99 +32,93 @@ const router = createBrowserRouter(
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin" element={<SignIn />} />
 
-      {/* Regular User */}
+      {/* Protected Routes - Any authenticated user */}
       <Route
         path="/restaurants"
         element={
-          <ProtectedRoute allowedRoles={["regular"]}>
+          <RequireAuth>
             <RestaurantList />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
       <Route
         path="/menuitems"
         element={
-          <ProtectedRoute allowedRoles={["regular"]}>
+          <RequireAuth>
             <MenuItems />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
-
-      {/* Restaurant Owner */}
       <Route
         path="/restaurant-dashboard"
         element={
-          <ProtectedRoute allowedRoles={["restaurantOwner"]}>
+          <RequireAuth>
             <RestaurantDashboard />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
       <Route
         path="/add-restaurant"
         element={
-          <ProtectedRoute allowedRoles={["restaurantOwner"]}>
+          <RequireAuth>
             <AddRestaurant />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
       <Route
         path="/restaurant/:id/menu-items"
         element={
-          <ProtectedRoute allowedRoles={["restaurantOwner"]}>
+          <RequireAuth>
             <RestaurantMenuItems />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
       <Route
         path="/restaurant/:id/menu-items/add"
         element={
-          <ProtectedRoute allowedRoles={["restaurantOwner"]}>
+          <RequireAuth>
             <AddMenuItemPage />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
       <Route
         path="/edit-restaurant/:id"
         element={
-          <ProtectedRoute allowedRoles={["restaurantOwner"]}>
+          <RequireAuth>
             <EditRestaurant />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
       <Route
         path="/restaurant/:id/menu-items/edit/:id"
         element={
-          <ProtectedRoute allowedRoles={["restaurantOwner"]}>
+          <RequireAuth>
             <EditMenuItem />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
-
-      {/* Admin */}
       <Route
         path="/admin/users"
         element={
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <RequireAuth>
             <AdminUserManagement />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
       <Route
         path="/admin/restaurants"
         element={
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <RequireAuth>
             <AdminRestaurantManagement />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
-
-      {/* Accessible by any authenticated user */}
       <Route
         path="/restaurants/:id"
         element={
-          <ProtectedRoute>
+          <RequireAuth>
             <RestaurantDetails />
-          </ProtectedRoute>
+          </RequireAuth>
         }
       />
     </Route>

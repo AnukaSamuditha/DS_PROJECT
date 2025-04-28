@@ -1,55 +1,53 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axiosInstance from "@/axiosConfig"; // axios with credentials
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true); // ✅ loading initially
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // 🔐 Login (manual or fetch from server)
-  const login = async (userData = null) => {
-    try {
-      if (userData) {
-        setUser(userData); // ✅ use provided user
-      } else {
-        const res = await axiosInstance.get("/users/get-user");
-        setUser(res.data.user);
-      }
-    } catch (error) {
-      console.error("Login failed", error);
-      setUser(null);
-    }
-  };
-
-  // 🚪 Logout
-  const logout = async () => {
-    try {
-      await axiosInstance.post("/users/logout");
-      setUser(null);
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
-  };
-
-  // ⏳ On first app load: try to get logged-in user
-  useEffect(() => {
-    const fetchUser = async () => {
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["user_self"],
+    queryFn: async () => {
       try {
-        const res = await axiosInstance.get("/users/get-user");
-        setUser(res.data.user);
-      } catch (err) {
-        setUser(null); // no active session
-      } finally {
-        setAuthLoading(false); // ✅ done checking
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_PREFIX}/users/get-user`,
+          {
+            withCredentials: true,
+          }
+        );
+        return res.data;
+      } catch (error) {
+        return null;
       }
-    };
+    },
+  });
 
-    fetchUser();
-  }, []);
+  useEffect(() => {
+    if (!isLoading) {
+      setUser(data || null);
+      setIsInitialized(true);
+    }
+  }, [data, isLoading]);
+
+  const login = async (userInfo) => {
+    setUser(userInfo);
+  };
+
+  const logout = async () => {
+      setUser(null);
+  };
+
+  if (!isInitialized) {
+    return <div>Loading authentication...</div>;
+  }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, authLoading }}>
+    <AuthContext.Provider
+      value={{ login, logout, user, isLoading: isLoading || isFetching }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -57,13 +55,64 @@ export default function AuthProvider({ children }) {
 
 export const useAuth = () => useContext(AuthContext);
 
+// import { createContext, useContext, useEffect, useState } from "react";
+// import axiosInstance from "@/axiosConfig"; // axios with credentials
 
+// export const AuthContext = createContext();
 
+// export default function AuthProvider({ children }) {
+//   const [user, setUser] = useState(null);
+//   const [authLoading, setAuthLoading] = useState(true); // ✅ loading initially
 
+//   // 🔐 Login (manual or fetch from server)
+//   const login = async (userData = null) => {
+//     try {
+//       if (userData) {
+//         setUser(userData); // ✅ use provided user
+//       } else {
+//         const res = await axiosInstance.get("/users/get-user");
+//         setUser(res.data.user);
+//       }
+//     } catch (error) {
+//       console.error("Login failed", error);
+//       setUser(null);
+//     }
+//   };
 
+//   // 🚪 Logout
+//   const logout = async () => {
+//     try {
+//       await axiosInstance.post("/users/logout");
+//       setUser(null);
+//     } catch (error) {
+//       console.error("Logout failed", error);
+//     }
+//   };
 
+//   // ⏳ On first app load: try to get logged-in user
+//   useEffect(() => {
+//     const fetchUser = async () => {
+//       try {
+//         const res = await axiosInstance.get("/users/get-user");
+//         setUser(res.data.user);
+//       } catch (err) {
+//         setUser(null); // no active session
+//       } finally {
+//         setAuthLoading(false); // ✅ done checking
+//       }
+//     };
 
+//     fetchUser();
+//   }, []);
 
+//   return (
+//     <AuthContext.Provider value={{ user, login, logout, authLoading }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// }
+
+// export const useAuth = () => useContext(AuthContext);
 
 // import { createContext, useContext, useState, useEffect } from "react";
 // import axios from "axios";
@@ -126,7 +175,6 @@ export const useAuth = () => useContext(AuthContext);
 
 // export const useAuth = () => useContext(AuthContext);
 
-
 // import { createContext, useContext, useState, useEffect } from "react";
 // import axios from "axios";
 
@@ -172,25 +220,19 @@ export const useAuth = () => useContext(AuthContext);
 
 // export const useAuth = () => useContext(AuthContext);
 
-
-
-
-
-
-
 // import {createContext, useContext, useState} from 'react'
 
 // export const AuthContext = createContext();
 
 // export default function AuthProvider({children}){
-    
+
 //     const [user,setUser] = useState(null);
 
 //     const login = async(userInfo,token)=>{
 //         setUser(userInfo);
 //         localStorage.setItem("token",token);
 //     }
-    
+
 //     const logout = async()=>{
 //         setUser(null);
 //         localStorage.removeItem("token");

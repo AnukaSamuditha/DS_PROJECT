@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "@/axiosConfig"; // ✅ use cookie-based axios instance
 import MapPicker from "../components/MapPicker";
+import { toast } from "react-toastify";
+
 
 export default function EditRestaurant() {
   const { id } = useParams();
@@ -46,7 +48,7 @@ export default function EditRestaurant() {
         }
       } catch (err) {
         console.error("Error fetching restaurant:", err);
-        alert("Failed to load restaurant data.");
+        toast.error("Failed to load restaurant data");
       }
     };
 
@@ -85,8 +87,7 @@ export default function EditRestaurant() {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      alert("Restaurant updated successfully!");
+      toast.success("Restaurant updated successfully!");
       navigate("/restaurant-dashboard");
     } catch (error) {
       console.error("Update error:", error);

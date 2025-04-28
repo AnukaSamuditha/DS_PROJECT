@@ -1,7 +1,9 @@
+//working
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MapPicker from "../components/MapPicker";
 import axiosInstance from "@/axiosConfig"; // ✅ Axios with cookies
+import { toast } from "react-toastify";
 
 export default function AddRestaurant() {
   const navigate = useNavigate();
@@ -48,12 +50,12 @@ export default function AddRestaurant() {
         },
       });
 
-      alert("Restaurant added successfully!");
+      toast.success("Restaurant added successfully!");
       navigate("/restaurant-dashboard");
     } catch (error) {
       console.error("Error adding restaurant", error);
       const message = error.response?.data?.message || "Failed to add restaurant";
-      alert(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -147,6 +149,166 @@ export default function AddRestaurant() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+// //working
+// import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import MapPicker from "../components/MapPicker";
+// import axiosInstance from "@/axiosConfig"; // ✅ Axios with cookies
+
+// export default function AddRestaurant() {
+//   const navigate = useNavigate();
+
+//   const [form, setForm] = useState({
+//     name: "",
+//     description: "",
+//     address: "",
+//     contactNumber: "",
+//     openingHours: "",
+//     image: null,
+//   });
+
+//   const [location, setLocation] = useState({ lat: null, lng: null, address: "" });
+//   const [loading, setLoading] = useState(false);
+
+//   const handleChange = (e) => {
+//     const { name, value, files } = e.target;
+//     if (name === "image") {
+//       setForm({ ...form, image: files[0] });
+//     } else {
+//       setForm({ ...form, [name]: value });
+//     }
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+
+//     try {
+//       const formData = new FormData();
+//       formData.append("name", form.name);
+//       formData.append("description", form.description);
+//       formData.append("address", location.address || form.address);
+//       formData.append("contactNumber", form.contactNumber);
+//       formData.append("openingHours", form.openingHours);
+//       formData.append("latitude", location.lat);
+//       formData.append("longitude", location.lng);
+//       if (form.image) formData.append("photo", form.image);
+
+//       await axiosInstance.post("/restaurants/create-restaurant", formData, {
+//         headers: {
+//           "Content-Type": "multipart/form-data",
+//         },
+//       });
+
+//       alert("Restaurant added successfully!");
+//       navigate("/restaurant-dashboard");
+//     } catch (error) {
+//       console.error("Error adding restaurant", error);
+//       const message = error.response?.data?.message || "Failed to add restaurant";
+//       alert(message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="p-6 min-h-screen bg-gray-50 flex items-center justify-center">
+//       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl space-y-6">
+//         <h2 className="text-3xl font-bold text-gray-900 text-center">Add New Restaurant</h2>
+
+//         <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
+//           <input
+//             type="text"
+//             name="name"
+//             placeholder="Restaurant Name"
+//             value={form.name}
+//             onChange={handleChange}
+//             required
+//             className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:ring-2 focus:ring-black text-gray-800"
+//           />
+
+//           <textarea
+//             name="description"
+//             placeholder="Description"
+//             value={form.description}
+//             onChange={handleChange}
+//             required
+//             className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:ring-2 focus:ring-black text-gray-800"
+//             rows={3}
+//           />
+
+//           <input
+//             type="text"
+//             name="contactNumber"
+//             placeholder="Contact Number"
+//             value={form.contactNumber}
+//             onChange={handleChange}
+//             required
+//             className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:ring-2 focus:ring-black text-gray-800"
+//           />
+
+//           <input
+//             type="text"
+//             name="openingHours"
+//             placeholder="Opening Hours (e.g., 10 AM - 10 PM)"
+//             value={form.openingHours}
+//             onChange={handleChange}
+//             required
+//             className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:ring-2 focus:ring-black text-gray-800"
+//           />
+
+//           <input
+//             type="file"
+//             name="image"
+//             accept="image/*"
+//             onChange={handleChange}
+//             className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:ring-2 focus:ring-black text-gray-800"
+//           />
+
+//           {/* 🌍 Google Maps Picker */}
+//           <MapPicker
+//             onLocationSelect={({ lat, lng, address }) => {
+//               setLocation({ lat, lng, address });
+//             }}
+//           />
+
+//           <input
+//             type="text"
+//             name="address"
+//             placeholder="Address (optional)"
+//             value={form.address}
+//             onChange={handleChange}
+//             className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:ring-2 focus:ring-black text-gray-800"
+//           />
+
+//           {location.lat && (
+//             <p className="text-sm text-gray-500">
+//               Selected Location: {location.lat.toFixed(5)}, {location.lng.toFixed(5)}
+//             </p>
+//           )}
+
+//           <button
+//             type="submit"
+//             disabled={loading}
+//             className="bg-black hover:bg-gray-800 text-white w-full p-3 rounded-lg font-semibold transition"
+//           >
+//             {loading ? "Submitting..." : "Add Restaurant"}
+//           </button>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// }
 
 
 

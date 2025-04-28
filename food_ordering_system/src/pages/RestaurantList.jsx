@@ -1,3 +1,4 @@
+//working
 import { useEffect, useState } from "react";
 import axiosInstance from "@/axiosConfig"; // ✅ axios with credentials
 import { useNavigate } from "react-router";
@@ -91,7 +92,6 @@ export default function RestaurantList() {
     </div>
   );
 }
-
 
 
 

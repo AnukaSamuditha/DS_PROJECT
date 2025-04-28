@@ -1,28 +1,34 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@/axiosConfig";
 import { useAuth } from "../Providers/AuthProvider";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import RestaurantCard from "../components/RestaurantCard";
-// import { toast } from "react-toastify"; // ✅ Optional toast support
+import Modal from "../components/Modal";
 
 export default function RestaurantDashboard() {
-  const { user, authLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const [restaurants, setRestaurants] = useState([]);
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [restaurantToDelete, setRestaurantToDelete] = useState(null);
 
   const backendURL = import.meta.env.VITE_BACKEND_PREFIX;
 
   useEffect(() => {
-    if (!authLoading && (!user || user.role !== "restaurantOwner")) {
-      navigate("/signin");
+    if (!isLoading) {
+      const role = user?.user?.role;
+      if (!user || role !== "restaurantOwner") {
+        navigate("/signin");
+      }
     }
-  }, [user, authLoading, navigate]);
-
+  }, [user, isLoading, navigate]);
+  console.log(user);
   useEffect(() => {
-    if (user?.role === "restaurantOwner") {
+    const role = user?.user?.role;
+    if (role === "restaurantOwner") {
       fetchRestaurants();
     }
   }, [user]);
@@ -47,15 +53,15 @@ export default function RestaurantDashboard() {
     }
   };
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this restaurant?");
-    if (!confirmDelete) return;
-
-    try {
-      await axiosInstance.delete(`/restaurants/restaurant-delete/${id}`);
-      fetchRestaurants();
-    } catch (err) {
-      console.error("Delete failed:", err);
+  const handleDelete = async () => {
+    if (restaurantToDelete) {
+      try {
+        await axiosInstance.delete(`/restaurants/restaurant-delete/${restaurantToDelete}`);
+        fetchRestaurants();
+        setIsModalOpen(false);
+      } catch (err) {
+        console.error("Delete failed:", err);
+      }
     }
   };
 
@@ -63,14 +69,14 @@ export default function RestaurantDashboard() {
     r.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (authLoading) return <div className="p-6 text-gray-600">Loading...</div>;
+  if (isLoading) return <div className="p-6 text-gray-600">Loading authentication...</div>;
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-8">
       {/* Heading */}
       <h2 className="text-3xl font-bold text-gray-900">My Restaurants</h2>
 
-      {/* Search Box */}
+      {/* Search Input */}
       <div>
         <input
           type="text"
@@ -81,7 +87,7 @@ export default function RestaurantDashboard() {
         />
       </div>
 
-      {/* Error */}
+      {/* Error Message */}
       {error && <p className="text-red-500">{error}</p>}
 
       {/* Restaurants List */}
@@ -97,16 +103,266 @@ export default function RestaurantDashboard() {
               role="restaurantOwner"
               showMap={false}
               onEdit={() => navigate(`/edit-restaurant/${res._id}`)}
-              onDelete={() => handleDelete(res._id)}
+              onDelete={() => {
+                setRestaurantToDelete(res._id);
+                setIsModalOpen(true);
+              }}
               onToggleAvailability={() => handleAvailabilityToggle(res._id)}
               onManageMenu={() => navigate(`/restaurant/${res._id}/menu-items`)}
             />
           ))}
         </div>
       )}
+
+      {/* Modal Component */}
+      {isModalOpen && (
+        <Modal
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleDelete}
+          message="Are you sure you want to delete this restaurant?"
+        />
+      )}
     </div>
   );
 }
+
+
+
+
+
+//updated - chatgpt - loading error
+// import { useEffect, useState } from "react";
+// import axiosInstance from "@/axiosConfig";
+// import { useAuth } from "../Providers/AuthProvider";
+// import { useNavigate } from "react-router-dom"; // 🔥 updated import
+// import RestaurantCard from "../components/RestaurantCard";
+// // import { toast } from "react-toastify"; // ✅ Optional toast support
+
+// export default function RestaurantDashboard() {
+//   const { user, isInitialized } = useAuth(); // 🔥 updated from authLoading ➔ isInitialized
+//   const navigate = useNavigate();
+
+//   const [restaurants, setRestaurants] = useState([]);
+//   const [search, setSearch] = useState("");
+//   const [error, setError] = useState("");
+
+//   const backendURL = import.meta.env.VITE_BACKEND_PREFIX;
+
+//   useEffect(() => {
+//     console.log("isInitialized:", isInitialized);
+//     console.log("user:", user);
+
+//     if (isInitialized) { // 🔥 use isInitialized safely
+//       const role =  user?.user?.role; // 🔥 safe access
+//       if (!user || role !== "restaurantOwner") {
+//         navigate("/signin");
+//       }
+//     }
+//   }, [user, isInitialized, navigate]);
+
+//   useEffect(() => {
+//     const role = user?.user?.role;
+//     if (role === "restaurantOwner") {
+//       fetchRestaurants();
+//     }
+//   }, [user]);
+
+//   const fetchRestaurants = async () => {
+//     try {
+//       const res = await axiosInstance.get("/restaurants/owned-restaurants");
+//       setRestaurants(res.data.restaurants || []);
+//       setError("");
+//     } catch (err) {
+//       console.error("Fetch error:", err);
+//       setError("Failed to fetch restaurants.");
+//     }
+//   };
+
+//   const handleAvailabilityToggle = async (id) => {
+//     try {
+//       await axiosInstance.patch(`/restaurants/availability-restaurant/${id}`);
+//       fetchRestaurants();
+//     } catch (err) {
+//       console.error("Toggle availability failed:", err);
+//     }
+//   };
+
+//   const handleDelete = async (id) => {
+//     const confirmDelete = window.confirm("Are you sure you want to delete this restaurant?");
+//     if (!confirmDelete) return;
+
+//     try {
+//       await axiosInstance.delete(`/restaurants/restaurant-delete/${id}`);
+//       fetchRestaurants();
+//     } catch (err) {
+//       console.error("Delete failed:", err);
+//     }
+//   };
+
+//   const filteredRestaurants = restaurants.filter((r) =>
+//     r.name.toLowerCase().includes(search.toLowerCase())
+//   );
+
+//   // 🔥 updated loading condition
+//   if (!isInitialized) return <div className="p-6 text-gray-600">Loading...</div>;
+
+//   return (
+//     <div className="p-6 max-w-7xl mx-auto space-y-8">
+//       {/* Heading */}
+//       <h2 className="text-3xl font-bold text-gray-900">My Restaurants</h2>
+
+//       {/* Search Box */}
+//       <div>
+//         <input
+//           type="text"
+//           placeholder="Search your restaurants..."
+//           value={search}
+//           onChange={(e) => setSearch(e.target.value)}
+//           className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 placeholder-gray-400 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
+//         />
+//       </div>
+
+//       {/* Error */}
+//       {error && <p className="text-red-500">{error}</p>}
+
+//       {/* Restaurants List */}
+//       {filteredRestaurants.length === 0 ? (
+//         <p className="text-gray-500">No restaurants found.</p>
+//       ) : (
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+//           {filteredRestaurants.map((res) => (
+//             <RestaurantCard
+//               key={res._id}
+//               restaurant={res}
+//               backendURL={backendURL}
+//               role="restaurantOwner"
+//               showMap={false}
+//               onEdit={() => navigate(`/edit-restaurant/${res._id}`)}
+//               onDelete={() => handleDelete(res._id)}
+//               onToggleAvailability={() => handleAvailabilityToggle(res._id)}
+//               onManageMenu={() => navigate(`/restaurant/${res._id}/menu-items`)}
+//             />
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+// import { useEffect, useState } from "react";
+// import axiosInstance from "@/axiosConfig";
+// import { useAuth } from "../Providers/AuthProvider";
+// import { useNavigate } from "react-router";
+// import RestaurantCard from "../components/RestaurantCard";
+// // import { toast } from "react-toastify"; // ✅ Optional toast support
+
+// export default function RestaurantDashboard() {
+//   const { user, authLoading } = useAuth();
+//   const navigate = useNavigate();
+
+//   const [restaurants, setRestaurants] = useState([]);
+//   const [search, setSearch] = useState("");
+//   const [error, setError] = useState("");
+
+//   const backendURL = import.meta.env.VITE_BACKEND_PREFIX;
+
+//   useEffect(() => {
+//     if (!authLoading && (!user || user.role !== "restaurantOwner")) {
+//       navigate("/signin");
+//     }
+//   }, [user, authLoading, navigate]);
+
+//   useEffect(() => {
+//     if (user?.role === "restaurantOwner") {
+//       fetchRestaurants();
+//     }
+//   }, [user]);
+
+//   const fetchRestaurants = async () => {
+//     try {
+//       const res = await axiosInstance.get("/restaurants/owned-restaurants");
+//       setRestaurants(res.data.restaurants || []);
+//       setError("");
+//     } catch (err) {
+//       console.error("Fetch error:", err);
+//       setError("Failed to fetch restaurants.");
+//     }
+//   };
+
+//   const handleAvailabilityToggle = async (id) => {
+//     try {
+//       await axiosInstance.patch(`/restaurants/availability-restaurant/${id}`);
+//       fetchRestaurants();
+//     } catch (err) {
+//       console.error("Toggle availability failed:", err);
+//     }
+//   };
+
+//   const handleDelete = async (id) => {
+//     const confirmDelete = window.confirm("Are you sure you want to delete this restaurant?");
+//     if (!confirmDelete) return;
+
+//     try {
+//       await axiosInstance.delete(`/restaurants/restaurant-delete/${id}`);
+//       fetchRestaurants();
+//     } catch (err) {
+//       console.error("Delete failed:", err);
+//     }
+//   };
+
+//   const filteredRestaurants = restaurants.filter((r) =>
+//     r.name.toLowerCase().includes(search.toLowerCase())
+//   );
+
+//   if (authLoading) return <div className="p-6 text-gray-600">Loading...</div>;
+
+//   return (
+//     <div className="p-6 max-w-7xl mx-auto space-y-8">
+//       {/* Heading */}
+//       <h2 className="text-3xl font-bold text-gray-900">My Restaurants</h2>
+
+//       {/* Search Box */}
+//       <div>
+//         <input
+//           type="text"
+//           placeholder="Search your restaurants..."
+//           value={search}
+//           onChange={(e) => setSearch(e.target.value)}
+//           className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 placeholder-gray-400 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
+//         />
+//       </div>
+
+//       {/* Error */}
+//       {error && <p className="text-red-500">{error}</p>}
+
+//       {/* Restaurants List */}
+//       {filteredRestaurants.length === 0 ? (
+//         <p className="text-gray-500">No restaurants found.</p>
+//       ) : (
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+//           {filteredRestaurants.map((res) => (
+//             <RestaurantCard
+//               key={res._id}
+//               restaurant={res}
+//               backendURL={backendURL}
+//               role="restaurantOwner"
+//               showMap={false}
+//               onEdit={() => navigate(`/edit-restaurant/${res._id}`)}
+//               onDelete={() => handleDelete(res._id)}
+//               onToggleAvailability={() => handleAvailabilityToggle(res._id)}
+//               onManageMenu={() => navigate(`/restaurant/${res._id}/menu-items`)}
+//             />
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
 
 
 
