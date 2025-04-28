@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useAuth } from "@/Providers/AuthProvider";
 import { socket } from "../Socket/socket";
-import GoogleMapContainer from "./GoogleMapContainer";
+import GoogleMapContainer from "../components/GoogleMapContainer";
 import {
   CircleArrowLeft,
   Clock,
@@ -15,10 +15,11 @@ import {
 import ProfilePicture from "../assets/profile_dummy.jpg";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "../components/ui/skeleton";
 import EmptyBox from "@/assets/empty-box.png";
-import AlertDialogPopup from "./ui/AlertDialog";
-import Order from "./ui/Order";
+import AlertDialogPopup from "../components/ui/AlertDialog";
+import Order from "../components/ui/Order";
+import OrderTab from "../components/ui/OrderTab";
 
 export default function StartDelivery({ isLoaded }) {
   const { user, isLoading } = useAuth();
@@ -85,7 +86,7 @@ export default function StartDelivery({ isLoaded }) {
   }, [isTracking]);
 
   useEffect(() => {
-    if (isTracking && orderStatus === "accepted") {
+    if (isTracking && riderId) {
       socket.emit("rider_location_request", {
         riderId,
       });
@@ -102,7 +103,7 @@ export default function StartDelivery({ isLoaded }) {
       socket.emit("tracking_rider_stop");
       socket.off("rider_location_updated");
     };
-  }, [orderStatus, isTracking]);
+  }, [isTracking]);
 
   const handleAcceptOrder = () => {
     socket.emit(
@@ -166,7 +167,7 @@ export default function StartDelivery({ isLoaded }) {
         (error) => {
           console.log("Error fetching location ", error.message);
         },
-        { enableHighAccuracy: true, maximumAge: 0, timeout: 2000 }
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
       );
 
       intervalIdRef.current = setInterval(() => {
@@ -244,6 +245,12 @@ export default function StartDelivery({ isLoaded }) {
     refetchOnWindowFocus: true,
   });
 
+  useEffect(()=>{
+    if(currentOrderStatus === "completed"){
+      setOrder(null);
+    }
+  },[currentOrderStatus]);
+
   const {
     data: currentLocationData,
     isFetching,
@@ -298,6 +305,21 @@ export default function StartDelivery({ isLoaded }) {
   const handleIsPickEnabling = (event) => {
     setIsPicked(event.target.checked);
   };
+
+  const dayOrdersQuery = useQuery({
+    queryKey: ["day_orders"],
+    queryFn: async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/day/${user.user._id}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      return res.data.orders;
+    },
+    retryOnMount: true,
+  });
 
   return (
     <section className="w-full h-screen lg:flex justify-center items-center p-[16px] gap-5 bg-white overflow-y-scroll scrollbar-hide">
@@ -373,7 +395,7 @@ export default function StartDelivery({ isLoaded }) {
                 Start Deliverying Today!
               </h5>
               <button
-                disabled={isFetching}
+                disabled={isFetching || (order && order._id)}
                 onClick={() => {
                   handleDeliveryEnabling(riderId);
                 }}
@@ -400,14 +422,16 @@ export default function StartDelivery({ isLoaded }) {
           )}
 
           <div className="mt-16 w-full h-auto">
-            {orderStatus === "accepted" && <Order order={order} />}
+            {(orderStatus == "accepted" && order) && (
+              <Order status={currentOrderStatus} order={order} />
+            )}
           </div>
 
           {isFetched &&
             currentOrderStatus &&
             currentOrderStatus === "reached" && (
               <div className="w-full h-auto flex justify-start items-center">
-                <div className="w-auto h-[3rem] bg-yellow-50 border border-yellow-200 mt-5 rounded-xl flex justify-start items-center gap-3 px-4 py-3 ">
+                <div className="w-full h-[3rem] bg-yellow-50 border border-yellow-200 mt-5 rounded-xl flex justify-start items-center gap-3 px-4 py-3 ">
                   <input
                     type="checkbox"
                     name="isPicked"
@@ -417,6 +441,23 @@ export default function StartDelivery({ isLoaded }) {
                   <span className="text-sm font-medium tracking-tight text-black">
                     Confirm order pickup
                   </span>
+                </div>
+              </div>
+            )}
+          {dayOrdersQuery &&
+            dayOrdersQuery.data &&
+            dayOrdersQuery.data.length > 0 && (
+              <div className="w-full mt-5">
+                <div className="w-full h-[3rem] flex justify-start items-center border-b border-b-[#E5E5E5]">
+                  <h4 className="text-sm tracking-tight text-black font-semibold">
+                    Completed Orders
+                  </h4>
+                </div>
+                <div className="w-full h-[8rem] max-h-[8rem] overflow-y-scroll mt-2 flex flex-col justify-start items-start scrollbar-hide">
+                  {dayOrdersQuery.data.length > 0 &&
+                    dayOrdersQuery.data.map((order,index) => {
+                      return <OrderTab key={index} order={order} />;
+                    })}
                 </div>
               </div>
             )}
@@ -468,7 +509,7 @@ export default function StartDelivery({ isLoaded }) {
                   Orders done
                 </h5>
                 <h5 className="text-zinc-400 font-normal text-xs tracking-tight">
-                  3
+                  {dayOrdersQuery.data ? dayOrdersQuery.data.length : 0}
                 </h5>
               </div>
             </div>

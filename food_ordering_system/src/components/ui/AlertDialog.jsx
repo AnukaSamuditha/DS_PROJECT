@@ -21,7 +21,7 @@ export default function AlertDialogPopup({isOpen,handlePopupOpen,order, onAccept
     handlePopupOpen();
   }
   return (
-    <AlertDialog open={isOpen}>
+    <AlertDialog open={isOpen} className="max-w-[95vw] sm:max-w-md">
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title && title}</AlertDialogTitle>

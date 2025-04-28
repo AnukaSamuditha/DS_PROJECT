@@ -62,7 +62,7 @@ const socketHandler = (io) => {
       await getNearByRidersUtility({
         lat: user.location.lat,
         lng: user.location.lng,
-        radius: 10,
+        radius: 20,
       })
         .then((riders) => {
           console.log("riders ", riders);
@@ -140,12 +140,14 @@ const socketHandler = (io) => {
     })
 
     socket.on("rider_arrived",async(data,ack)=>{
-      const riderId = data.riderId;
       const customerId = data.customerId;
       const orderId = data.orderId;
 
-      if(!riderId || !customerId || !orderId){
-        return ack({success:false, message:"Missing required fields!"})
+      if(!customerId || !orderId){
+        console.log("customer id ",customerId);
+        console.log("order id ",orderId)
+        console.log("Missing required fields!");
+        return;
       }
 
       const orderQueueStr = await redisClient.hGet(ORDER_QUEUE_KEY, orderId);
@@ -153,23 +155,24 @@ const socketHandler = (io) => {
 
       if (!orderQueue) {
         console.log("Order queue not found!");
-        return ack({ success: false, message: "Order queue is not found" });
+        return;
       }
       if(orderQueue.user){
         const customerSocketId = orderQueue.user.socketId;
+        const riderId = orderQueue.assignedRider;
         if(!customerSocketId){
-          return ack({success:false, message:"Customer socket id not found!"})
+          console.log("Customer socket id not found!");
+          return;
         }
 
         io.to(customerSocketId).emit("rider_arrival",{
           riderId,
           orderId
         })
-
-        ack({ success: true, message: "Rider arrival successfully sent to the customer." });
         await redisClient.hDel(ORDER_QUEUE_KEY,orderId);
       }else{
-        return ack({ success: false, message: "Required information unavailable!" });
+        console.log("Required information unavailable!")
+        return;
       }
       
     })

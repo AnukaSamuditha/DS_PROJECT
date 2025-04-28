@@ -9,11 +9,12 @@ import Layout from "./Layout";
 import Home from "./Home";
 import SignUp from "./Auth/SignUp";
 import SignIn from "./Auth/SignIn";
-import OrderStatus from "./components/OrderStatus";
-import StartDelivery from "./components/StartDelivery";
+import OrderStatus from "./pages/OrderStatus";
+import StartDelivery from "./pages/StartDelivery";
 import RequireAuth from "./components/RequireAuth";
 import PreOrder from "./components/PreOrder";
 import GoogleMapProvider from "./Providers/GoogleMapProvider";
+import Success from "./pages/success";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,7 +29,9 @@ const router = createBrowserRouter(
         path="/deliver"
         element={
           <RequireAuth>
-            <GoogleMapProvider>{(isLoaded)=><StartDelivery isLoaded={isLoaded}/>}</GoogleMapProvider>
+            <GoogleMapProvider>
+              {(isLoaded) => <StartDelivery isLoaded={isLoaded} />}
+            </GoogleMapProvider>
           </RequireAuth>
         }
       ></Route>
@@ -48,6 +51,14 @@ const router = createBrowserRouter(
         element={
           <RequireAuth>
             <PreOrder />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/success"
+        element={
+          <RequireAuth>
+            <Success />
           </RequireAuth>
         }
       />

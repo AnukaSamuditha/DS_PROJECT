@@ -2,17 +2,19 @@ import { Check, PhoneCallIcon } from "lucide-react";
 import ProfilePicture from "@/assets/profile_dummy.jpg";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useOrder } from "@/Providers/OrderStatusProvider";
+import { Rating } from "react-simple-star-rating";
+import { Skeleton } from "./skeleton";
 
-export function RiderTab({ riderName }) {
-  console.log("ridername ", riderName);
+export function RiderTab({ riderInfo }) {
+  
   return (
     <div className="w-full h-[3rem] rounded-xl bg-white px-5 py-3 flex justify-between items-center">
       <div className="w-auto flex justify-start items-center gap-3">
         <img src={ProfilePicture} className="w-8 h-8 rounded-full " />
-        <h6 className="text-gray-500 font-medium tracking-tight text-sm">
-          {riderName && riderName}
+        <h6 className="text-black font-medium tracking-tight text-sm">
+          {riderInfo && riderInfo.username.charAt(0).toUpperCase() + riderInfo.username.slice(1)}
         </h6>
+        {riderInfo ? <Rating initialValue={Number(riderInfo.averageRating)} readonly={true} size={20}/> : <Skeleton className="w-8 h-3 rounded-xl"/>}
       </div>
       <div className="w-[2rem] h-[2rem] bg-black rounded-full flex justify-center items-center gap-2">
         <PhoneCallIcon size={15} color="white" />
@@ -46,7 +48,6 @@ export default function OrderProcess({ orderId,isOrderLive }) {
         return;
       }
       
-      console.log("OS - A ORDER ",res.data.status.status)
       return res.data.status.status;
     },
     enabled: !!orderId && isOrderLive,  

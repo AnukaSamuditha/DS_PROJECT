@@ -130,9 +130,9 @@ body {
 }
 
 .custom-border-gradient {
-    border: 1px solid transparent; /* Set a solid transparent border */
-    border-radius: 100px; /* Make the border fully rounded */
-    border-image: linear-gradient(to right, #ffaa40, #9c40ff, #ffaa40) 1; /* Apply the gradient to the border */
+    border: 1px solid transparent;
+    border-radius: 100px;
+    border-image: linear-gradient(to right, #ffaa40, #9c40ff, #ffaa40) 1;
 }
 
 @keyframes slideLeftRight {
@@ -148,4 +148,16 @@ body {
     animation: slideLeftRight 1.5s ease-in-out infinite;
   }
   
-  
+svg.star-svg {
+    display: inline;
+}
+ 
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; 
+  scrollbar-width: none;
+}

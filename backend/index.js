@@ -17,6 +17,7 @@ app.use(cors({
   origin:process.env.FRONTEND_PREFIX,
   credentials:true
 }));
+
 app.use(cookieParser());
 app.use(express.json());
 app.use("/users",userRoutes);

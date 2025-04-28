@@ -14,6 +14,7 @@ import { socket } from "@/Socket/socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 const containerStyle = {
   width: "100%",
@@ -54,18 +55,21 @@ export default function GoogleMapContainer({
   const [accRiderInitial, setAccRiderInitial] = useState(null);
   const [orderStatus, setOrderStatus] = useState("order_accepted");
   const hasSimulated = React.useRef(false);
-  const isLoadedSingleRider = React.useRef(false);
+  const isLoadedSingleRider = useRef(false);
   const singleRiderMarkerRef = useRef(null);
   const accRiderMarkerRef = useRef(null);
   const queryClient = useQueryClient();
   const initalRouteCheckSingle = useRef(false);
   const initialAssignCheckAccept = useRef(false);
   const isLoadedAcceptedRider = useRef(false);
+  const accRiderIdRef = useRef(null);
 
   const shopLocationRef = useRef(null);
   const animationFrameRef = useRef(null);
   const activeSimulationRef = useRef(false);
   const routeUpdateRef = useRef(false);
+
+  const navigate = useNavigate();
 
   const onLoad = React.useCallback(function callback(map) {
     const bounds = new window.google.maps.LatLngBounds();
@@ -120,6 +124,7 @@ export default function GoogleMapContainer({
   React.useEffect(() => {
     if (singleRider && !isLoadedSingleRider.current) {
       setSingleRiderInfo(singleRider);
+      setSingleRiderInitial(singleRider.location);
       isLoadedSingleRider.current = true;
     }
   }, [singleRider]);
@@ -128,7 +133,6 @@ export default function GoogleMapContainer({
     queryKey: ["order_status", order?._id],
 
     queryFn: async () => {
-      console.log("FETCHING CURRENT ORDER STATUS...", order?._id);
       if (!order._id) {
         console.log("Order id is undefined!");
         return;
@@ -145,18 +149,31 @@ export default function GoogleMapContainer({
         return;
       }
 
-      console.log("order status from fetch method ", res.data.status.status);
       return res.data.status.status;
     },
-    enabled: order?._id && acceptedRiderId && isTracking ? true : false,
+    enabled:
+      order?._id && (acceptedRiderId || singleRiderInfo) && isTracking
+        ? true
+        : false,
     retryOnMount: true,
     refetchOnWindowFocus: true,
     refetchInterval: 2000,
   });
 
-  React.useEffect(() => {
+  useEffect(()=>{
+    
+    if(currentOrderStatus === "completed"){
+      setSingleRiderInfo(null);
+      setSingleRiderRoute(null);
+      setSingleRiderInitial(null);
+    }
+
+  },[currentOrderStatus])
+
+  useEffect(() => {
     if (acceptedRiderId && !isLoadedAcceptedRider.current) {
       setAcceptedRiderInfo(acceptedRiderId);
+      accRiderIdRef.current = acceptedRiderId;
       isLoadedAcceptedRider.current = true;
     }
   }, [acceptedRiderId]);
@@ -169,11 +186,6 @@ export default function GoogleMapContainer({
 
       socket.on("rider_location_updated", (data) => {
         if (data.riderId === acceptedRiderId) {
-          console.log(
-            "getting data acc rider ",
-            data.riderLocation[0].latitude
-          );
-
           if (accRiderMarkerRef.current) {
             accRiderMarkerRef.current.setPosition({
               lng: Number(data.riderLocation[0].longitude),
@@ -205,8 +217,8 @@ export default function GoogleMapContainer({
             );
 
             setDestinationPoint({
-              lat:shopPos.lat(),
-              lng:shopPos.lng()
+              lat: shopPos.lat(),
+              lng: shopPos.lng(),
             });
 
             routeUpdateRef.current = true;
@@ -221,6 +233,20 @@ export default function GoogleMapContainer({
             setTimeout(() => {
               getRoute();
             }, 1000);
+          }
+
+          if (currentOrderStatus === "completed") {
+            setAcceptedRiderInfo(null);
+            setAccRiderInitial(null);
+            setDestinationPoint(null);
+            setAcceptedRiderRoute(null);
+
+            socket.emit("tracking_rider_stop");
+            socket.off("rider_location_updated");
+            queryClient.invalidateQueries(["day_orders"]);
+
+            navigate("/success");
+            return;
           }
         }
       });
@@ -386,17 +412,15 @@ export default function GoogleMapContainer({
       if (orderStatus === "order_accepted") {
         console.log("Reached shop — updating to 'picked'");
         orderStatusMutation.mutate("reached");
-
       } else if (orderStatus === "onTheWay") {
         console.log("Reached user — updating to 'delivered'");
 
         setOrderStatus("delivered");
 
-        socket.emit("rider_arrived",{
-          customerId:order.user._id,
-          riderId:acceptedRiderId,
-          orderId:order._id
-        })
+        socket.emit("rider_arrived", {
+          customerId: order.user.id,
+          orderId: order._id,
+        });
         orderStatusMutation.mutate("delivered");
         initalRouteCheckSingle.current = false;
       }
@@ -425,7 +449,6 @@ export default function GoogleMapContainer({
       destinationPoint &&
       (!hasSimulated.current || orderStatus === "onTheWay")
     ) {
-      console.log("Calling simulateRider method");
       simulateRider(order);
       if (orderStatus === "order_accepted") {
         hasSimulated.current = true;
@@ -491,6 +514,9 @@ export default function GoogleMapContainer({
     }
   };
 
+  console.log("SINGLE RIDER LAT ", singleRiderInfo);
+  //console.log("SINGLE RIDER LNG ",singleRiderInfo);
+
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
@@ -518,7 +544,7 @@ export default function GoogleMapContainer({
               position={{ lat: Number(driver.lat), lng: Number(driver.lng) }}
               mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
             >
-              <LocationMarker />
+              {/* <LocationMarker /> */}
               {/* <div className="bg-black w-auto max-w-[120px] h-[40px]  rounded-full flex justify-start items-center px-1.5 py-1.5 gap-2 pr-3">
               <img src={ProfilePicture} className="w-[30px] h-[30px] rounded-full"/>
               <h1 className="text-xs text-white font-semibold tracking-tight max-w-[120px] truncate overflow-hidden whitespace-nowrap">{driver.riderName}</h1>
@@ -542,18 +568,16 @@ export default function GoogleMapContainer({
           <OverlayViewF
             position={{
               lat: Number(
-                // singleRiderInfo.updatedLocation?.latitude ??
-                singleRiderInfo.location.latitude
+                singleRiderInfo.updatedLocation?.latitude ??
+                  singleRiderInfo.location.lat
               ),
               lng: Number(
-                // singleRiderInfo.updatedLocation?.longitude ??
-                singleRiderInfo.location.longitude
+                singleRiderInfo.updatedLocation?.longitude ??
+                  singleRiderInfo.location.lng
               ),
             }}
             mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-          >
-            {/* <LocationMarker /> */}
-          </OverlayViewF>
+          ></OverlayViewF>
         </MarkerF>
       )}
 

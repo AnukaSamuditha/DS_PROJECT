@@ -26,7 +26,7 @@ const orderSchema = new mongoose.Schema({
       price: { type: Number, required: true },
     },
   ],
-  amount: { type: Number, required: true }, // item total
+  amount: { type: Number, required: true },
   deliveryFee: { type: Number, required: true },
   distanceFromShopToUser: { type: Number, default: null },
   totalAmount: { type: Number, required: true },
@@ -39,6 +39,7 @@ const orderSchema = new mongoose.Schema({
       "picked",
       "onTheWay",
       "delivered",
+      "completed"
     ],
     default: "pending",
   },
@@ -56,7 +57,7 @@ const orderSchema = new mongoose.Schema({
   notes: { type: String },
 });
 
-orderSchema.index({status:1});
+orderSchema.index({status:1,driverId:1,createdAt:1});
 
 const Order = mongoose.model("Order", orderSchema);
 

@@ -42,13 +42,14 @@ exports.createOrder = async (req, res) => {
 exports.updateOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, driverId,deliveryFee,distanceFromShopToUser } = req.body;
+    const { status, driverId, deliveryFee, distanceFromShopToUser, totalAmount } = req.body;
 
     const updatedFields = {};
     if (status) updatedFields.status = status;
-    if (driverId) updatedFields.driver = driverId;
+    if (driverId) updatedFields.driverId = driverId;
     if (deliveryFee) updatedFields.deliveryFee = deliveryFee;
     if (distanceFromShopToUser) updatedFields.distanceFromShopToUser = distanceFromShopToUser;
+    if (totalAmount) updatedFields.totalAmount = totalAmount;
 
     const updatedOrder = await Order.findByIdAndUpdate(
       id,
@@ -69,7 +70,7 @@ exports.updateOrder = async (req, res) => {
 
 exports.getOrder = async (req, res) => {
   const { id } = req.params;
-  console.log("order id ",id)
+
   try {
     if (!id) {
       return res.status(400).json({
@@ -87,7 +88,7 @@ exports.getOrder = async (req, res) => {
 
     return res.status(200).json({
       message: "Order data fetched successfully",
-      order : order,
+      order: order,
     });
   } catch (error) {
     res.status(500).json({
@@ -99,7 +100,6 @@ exports.getOrder = async (req, res) => {
 
 exports.getOrderStatus = async (req, res) => {
   const { id } = req.params;
-  console.log("order id from order status ",id)
   try {
     if (!id) {
       return res.status(400).json({
@@ -108,7 +108,7 @@ exports.getOrderStatus = async (req, res) => {
     }
 
     const status = await Order.findById(id).select("status");
-    console.log("status")
+    console.log("status");
     if (!status) {
       return res.status(404).json({
         message: "Order not found!",
@@ -127,4 +127,40 @@ exports.getOrderStatus = async (req, res) => {
   }
 };
 
+exports.getDayOrders = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    if (!id) {
+      return res.status(400).json({
+        message: "Missing required information for getting an order status",
+      });
+    }
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const todayOrders = await Order.find({
+      driverId: id,
+      status: "completed",
+      createdAt:{
+        $gte:startOfDay,
+        $lte:endOfDay
+      }
+    });
+
+    res.status(200).json({
+      message: "Day orders fetched successfully.",
+      orders: todayOrders,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Error occured while fetching day orders!",
+      error: error.message,
+    });
+  }
+};

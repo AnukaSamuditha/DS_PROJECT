@@ -118,6 +118,7 @@ exports.enableDelivering = async (req, res) => {
         updatedDriver.isDelivering ? "enabled" : "disabled"
       } on the driver ${updatedDriver.username}`,
     });
+    
   } catch (error) {
     res.status(500).json({
       message: "Error occured while enabling the delivery!",
@@ -185,3 +186,36 @@ exports.getRiderLocation = async (req, res) => {
     });
   }
 };
+
+exports.rateRider = async(req,res)=>{
+  const {id,rating} = req.body;
+  try{
+    
+    if (!id) {
+      return res.status(400).json({
+        message: "Driver id is required",
+      });
+    }
+
+    const driver = await User.findById(id);
+    if (!driver) {
+      return res.status(404).json({
+        message: "Invalid driver id",
+      });
+    }
+
+    await driver.addRating(Number(rating));
+
+    res.status(200).json({
+      message:"Rider rating updated successfully",
+      averageRating:driver.averageRating,
+      totalRatings:driver.ratings.length
+    })
+
+  }catch(error){
+    res.status(500).json({
+      message: "Error occured while adding rider rating!",
+      error: error.message,
+    });
+  }
+}
