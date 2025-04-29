@@ -14,11 +14,7 @@ import StartDelivery from "./components/StartDelivery";
 import RequireAuth from "./components/RequireAuth";
 import PreOrder from "./components/PreOrder";
 import GoogleMapProvider from "./Providers/GoogleMapProvider";
-import {useQuery} from "@tanstack/react-query";
-import axios from "axios";
-import { useEffect } from "react";
 import Cart from "./components/Payment/Cart";
-import {subscribeUser} from "@/Providers/subscribeUser";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -64,22 +60,15 @@ const router = createBrowserRouter(
 
 export default function App() {
 
-    const { data: userData } = useQuery({
-        queryKey: ["user"],
-        queryFn: async () => {
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_PREFIX}/users/get-user`, {
-                withCredentials: true,
-            });
-            return res.data;
-        },
-    });
-
-    const userId = userData?.user?._id
-
-    useEffect(() => {
-        if (userId) {
-            subscribeUser(userId);
+    const channel = new BroadcastChannel('userId_channel');
+    channel.onmessage = (event) => {
+        if (event.data.requestUserId) {
+            const loggedInUserId = localStorage.getItem("userId");
+            channel.postMessage({ userId: loggedInUserId });
         }
-    }, [userId]);
+    };
+
   return <RouterProvider router={router} />;
 }
+
+

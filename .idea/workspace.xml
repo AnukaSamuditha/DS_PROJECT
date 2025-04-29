@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b4dceb81-59b2-4c40-9560-da4403cbca5f" name="Changes" comment="" />
+    <list default="true" id="b4dceb81-59b2-4c40-9560-da4403cbca5f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Routes/subscription.route.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Routes/subscription.route.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/service-worker.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/service-worker.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/Auth/SignUp.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/Auth/SignUp.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/components/NavBar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/components/NavBar.jsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -48,26 +56,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "com.codeium.enabled": "true",
-    "javascript.nodejs.core.library.configured.version": "22.13.1",
-    "javascript.nodejs.core.library.typings.version": "22.13.14",
-    "last_opened_file_path": "/Users/Sashi/DS_webproject/food_ordering_system/src/components/Payment/payment-blocks/images",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.dev.executor": "Run",
-    "npm.start.executor": "Run",
-    "settings.editor.selected.configurable": "com.codeium.AppSettingsConfigurable",
-    "ts.external.directory.path": "/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;fix/payment-branch&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;22.13.1&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;22.13.14&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/Sashi/DS_webproject/food_ordering_system/src/components/Payment/payment-blocks/images&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.start.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.codeium.AppSettingsConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/food_ordering_system/src/components/Payment/payment-blocks/images" />
@@ -130,10 +139,23 @@
       <workItem from="1744397254250" duration="722000" />
       <workItem from="1744466515296" duration="25712000" />
       <workItem from="1744906376342" duration="158371000" />
+      <workItem from="1745763295595" duration="31184000" />
+      <workItem from="1745870842908" duration="5360000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

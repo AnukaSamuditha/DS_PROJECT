@@ -121,11 +121,11 @@ router.get('/payment-history/:customerId', async (req, res) => {
 });
 
 
-
 mongoose
     .connect(process.env.MONGO_DB_URL)
     .then(() => {
         console.log("Database connected successfully");
+
         const changeStream = Payment.watch([
             {
                 $match: {
@@ -136,37 +136,42 @@ mongoose
         ]);
 
         changeStream.on("change", async (change) => {
-            const paymentId = change.documentKey._id;
+            if (
+                change.operationType === "update" &&
+                change.updateDescription.updatedFields &&
+                change.updateDescription.updatedFields.status
+            ) {
+                const paymentId = change.documentKey._id;
 
-            try {
-                const updatedPayment = await Payment.findById(paymentId).populate("userId");
+                try {
+                    const updatedPayment = await Payment.findById(paymentId).populate("userId");
 
-                if (updatedPayment && updatedPayment.userId) {
-                    const userId = updatedPayment.userId._id;
+                    if (updatedPayment && updatedPayment.userId) {
+                        const userId = updatedPayment.userId._id;
+                        const userSubscriptions = await Subscription.find({ userId });
 
-                    const userSubscriptions = await Subscription.find({ userId });
-
-                    for (let subscription of userSubscriptions) {
-                        try {
-                            await webpush.sendNotification(
-                                subscription.subscription,
-                                JSON.stringify({
-                                    title: "Payment Status Updated",
-                                    body: `OrderId: ${updatedPayment._id} \nStatus is: ${updatedPayment.status} \nAmount: $${updatedPayment.amount}`,
-                                })
-                            );
-
-                        } catch (err) {
-                            console.error("Failed to send push notification:", err.body);
-                            if (err.statusCode === 410 || err.statusCode === 404 || err.message.includes("unsubscribed")) {
-                                await Subscription.deleteOne({ _id: subscription._id });
-                                console.log("🗑️ Removed expired/unsubscribed push subscription");
+                        for (let subscription of userSubscriptions) {
+                            try {
+                                await webpush.sendNotification(
+                                    subscription.subscription,
+                                    JSON.stringify({
+                                        title: "Payment Status Updated",
+                                        body: `OrderId: ${updatedPayment._id} \nStatus is: ${updatedPayment.status} \nAmount: $${updatedPayment.amount}`,
+                                        userId: userId
+                                    })
+                                );
+                            } catch (err) {
+                                console.error("Failed to send push notification:", err.body);
+                                if (err.statusCode === 410 || err.statusCode === 404 || err.message.includes("unsubscribed")) {
+                                    await Subscription.deleteOne({ _id: subscription._id });
+                                    console.log("Removed expired/unsubscribed push subscription");
+                                }
                             }
                         }
                     }
+                } catch (err) {
+                    console.error("Error fetching updated payment/user:", err.message);
                 }
-            } catch (err) {
-                console.error("Error fetching updated payment/user:", err.message);
             }
         });
         app.listen(process.env.PORT, () => {
