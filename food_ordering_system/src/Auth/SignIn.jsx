@@ -41,7 +41,11 @@ export default function SignIn() {
       return res.data;
     },
     onSuccess: (res) => {
-      console.log("User were logged in sucessfully", res);
+      console.log("User were logged in sucessfully", res)
+      localStorage.setItem("role",res?.data?.role)
+      localStorage.setItem("userId",res?.data?.id)
+      console.log(localStorage.getItem("role"),"wow");
+      
       login(res.data);
       reset();
       redirectedFrom ? navigate(redirectedFrom) : navigate("/");

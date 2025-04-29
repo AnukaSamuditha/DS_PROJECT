@@ -19,15 +19,15 @@ export default function RestaurantDashboard() {
 
   useEffect(() => {
     if (!isLoading) {
-      const role = user?.user?.role;
-      if (!user || role !== "restaurantOwner") {
+      const role = localStorage.getItem("role");
+      if (role !== "restaurantOwner") {
         navigate("/signin");
       }
     }
   }, [user, isLoading, navigate]);
   console.log(user);
   useEffect(() => {
-    const role = user?.user?.role;
+    const role = localStorage.getItem("role");
     if (role === "restaurantOwner") {
       fetchRestaurants();
     }
@@ -125,6 +125,8 @@ export default function RestaurantDashboard() {
     </div>
   );
 }
+
+
 
 
 

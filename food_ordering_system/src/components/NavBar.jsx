@@ -2,20 +2,26 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../Providers/AuthProvider";
 
 export default function NavBar() {
-  const { user, logout, isLoading } = useAuth(); // Destructure isLoading here
+  const { user,logout, isLoading } = useAuth(); // Destructure isLoading here
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      localStorage.removeItem("userId")
       navigate("/signin");
     } catch (err) {
       console.error("Logout failed:", err);
     }
   };
 
-  const userRole = user?.user?.role;
-  const isLoggedIn = user && (user._id || user.user?._id);
+  let role = localStorage.getItem("role")
+  console.log(role);
+
+
+  const userRole = role;
+  const userId = localStorage.getItem("userId")
+  const isLoggedIn = (userId != null);
+  
 
   // Render a loading spinner if data is still being fetched
   if (isLoading) {
