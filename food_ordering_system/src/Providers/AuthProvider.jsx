@@ -6,17 +6,41 @@ export default function AuthProvider({children}){
     
     const [user,setUser] = useState(null);
 
+    const { data, isLoading, isFetching } = useQuery({
+        queryKey: ["user_self"],
+        queryFn: async () => {
+            try {
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_PREFIX}/users/self`, {
+                    withCredentials: true
+                });
+                return res.data;
+            } catch (error) {
+                return null;
+            }
+        },
+    });
+
+    useEffect(() => {
+        if (!isLoading) {
+            setUser(data || null);
+            setIsInitialized(true);
+        }
+    }, [data, isLoading]);
+
     const login = async(userInfo,token)=>{
         setUser(userInfo);
         localStorage.setItem("token",token);
         localStorage.setItem("user",userInfo)
-
     }
-    
+
     const logout = async()=>{
         setUser(null);
         localStorage.removeItem("token");
         localStorage.removeItem("user")
+    }
+
+    if (!isInitialized) {
+        return <div>Loading authentication...</div>;
     }
 
     return(

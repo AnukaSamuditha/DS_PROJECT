@@ -3,6 +3,7 @@ import Lottie from "lottie-react";
 import scooterMan from "./assets/scooter-person.json";
 import { AnimatedGradientTextDemo } from "./components/magicui/gradient-button";
 import { useAuth } from "./Providers/AuthProvider";
+import { motion } from "framer-motion";
 
 export default function Home() {
  
@@ -23,13 +24,13 @@ export default function Home() {
           minutes!{" "}
         </p>
       </div>
-      <div className="w-full h-[300px] flex justify-center items-center absolute top-72">
+      <motion.div initial={{translateX:-400}} animate={{translateX:0,transition:{duration:2}}} className="w-full h-[300px] flex justify-center items-center absolute top-72">
         <Lottie
           animationData={scooterMan}
           loop={true}
           className="w-[300px] h-[300px]"
         />
-      </div>
+      </motion.div>
     </section>
   );
 }
