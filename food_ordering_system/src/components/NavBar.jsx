@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../Providers/AuthProvider";
-import { NavLink } from "react-router";
 import { BellRing } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -10,6 +9,7 @@ import Swal from "sweetalert2";
 export default function NavBar() {
   const { user, logout, isLoading } = useAuth();
   const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
 
   const { data: userData } = useQuery({
     queryKey: ["user"],
@@ -23,10 +23,6 @@ export default function NavBar() {
       return res.data;
     },
   });
-
-  if (userId) {
-    localStorage.setItem("userId", userId);
-  }
 
   const notifiy = () => {
     if (userId) {
@@ -77,43 +73,40 @@ export default function NavBar() {
   console.log(role);
 
   const userRole = role;
-  const userId = localStorage.getItem("userId");
   const isLoggedIn = userId != null;
 
-  // Render a loading spinner if data is still being fetched
+  if (userId) {
+    localStorage.setItem("userId", userId);
+  }
+
   if (isLoading) {
     return (
       <header className="sticky top-0 z-50 w-full bg-white shadow-sm">
         <nav className="max-w-7xl mx-auto px-4 flex items-center justify-between h-[60px]">
-          {/* Logo */}
           <div
             className="text-xl font-bold text-black cursor-pointer"
             onClick={() => navigate("/")}
           ></div>
-          {/* Loading Spinner */}
           <div className="text-black">Loading...</div>{" "}
-          {/* This could be a spinner or text */}
         </nav>
       </header>
     );
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-black shadow-sm">
       <nav className="max-w-7xl mx-auto px-4 flex items-center justify-between h-[60px]">
-        {/* Logo */}
         <div
           className="text-xl font-bold text-black cursor-pointer"
           onClick={() => navigate("/")}
         ></div>
 
-        {/* Links */}
-        <ul className="hidden md:flex items-center gap-8 font-medium text-gray-700 text-sm">
+        <ul className="hidden md:flex items-center gap-8 font-medium text-white text-sm">
           <li>
             <NavLink
               to="/"
               className={({ isActive }) =>
-                isActive ? "text-black font-semibold" : "hover:text-black"
+                isActive ? "text-green-400 font-semibold" : "text-white"
               }
             >
               Home
@@ -126,7 +119,7 @@ export default function NavBar() {
                 <NavLink
                   to="/restaurant-dashboard"
                   className={({ isActive }) =>
-                    isActive ? "text-black font-semibold" : "hover:text-black"
+                    isActive ? "text-green-400 font-semibold" : "text-white"
                   }
                 >
                   My Restaurants
@@ -136,7 +129,7 @@ export default function NavBar() {
                 <NavLink
                   to="/add-restaurant"
                   className={({ isActive }) =>
-                    isActive ? "text-black font-semibold" : "hover:text-black"
+                    isActive ? "text-green-400 font-semibold" : "text-white"
                   }
                 >
                   Add Restaurant
@@ -151,7 +144,7 @@ export default function NavBar() {
                 <NavLink
                   to="/admin/users"
                   className={({ isActive }) =>
-                    isActive ? "text-black font-semibold" : "hover:text-black"
+                    isActive ? "text-green-400 font-semibold" : "text-white"
                   }
                 >
                   Manage Users
@@ -161,7 +154,7 @@ export default function NavBar() {
                 <NavLink
                   to="/admin/restaurants"
                   className={({ isActive }) =>
-                    isActive ? "text-black font-semibold" : "hover:text-black"
+                    isActive ? "text-green-400 font-semibold" : "text-white"
                   }
                 >
                   Manage Restaurants
@@ -176,7 +169,7 @@ export default function NavBar() {
                 <NavLink
                   to="/restaurants"
                   className={({ isActive }) =>
-                    isActive ? "text-black font-semibold" : "hover:text-black"
+                    isActive ? "text-green-400 font-semibold" : "text-white"
                   }
                 >
                   Restaurants
@@ -186,7 +179,7 @@ export default function NavBar() {
                 <NavLink
                   to="/menuitems"
                   className={({ isActive }) =>
-                    isActive ? "text-black font-semibold" : "hover:text-black"
+                    isActive ? "text-green-400 font-semibold" : "text-white"
                   }
                 >
                   Food
@@ -196,7 +189,7 @@ export default function NavBar() {
                 <NavLink
                   to="/contact"
                   className={({ isActive }) =>
-                    isActive ? "text-black font-semibold" : "hover:text-black"
+                    isActive ? "text-green-400 font-semibold" : "text-white"
                   }
                 >
                   Contact
@@ -211,7 +204,7 @@ export default function NavBar() {
                 <NavLink
                   to="/signin"
                   className={({ isActive }) =>
-                    isActive ? "text-black font-semibold" : "hover:text-black"
+                    isActive ? "text-green-400 font-semibold" : "text-white"
                   }
                 >
                   Sign In
@@ -221,7 +214,7 @@ export default function NavBar() {
                 <NavLink
                   to="/signup"
                   className={({ isActive }) =>
-                    isActive ? "text-black font-semibold" : "hover:text-black"
+                    isActive ? "text-green-400 font-semibold" : "text-white"
                   }
                 >
                   Sign Up
@@ -232,7 +225,7 @@ export default function NavBar() {
             <li>
               <button
                 onClick={handleLogout}
-                className="bg-black hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-lg transition"
+                className="bg-white hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-lg transition"
               >
                 Logout
               </button>
