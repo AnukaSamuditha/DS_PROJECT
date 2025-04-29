@@ -60,6 +60,7 @@ const router = createBrowserRouter(
 
 export default function App() {
 
+
     const channel = new BroadcastChannel('userId_channel');
     channel.onmessage = (event) => {
         if (event.data.requestUserId) {

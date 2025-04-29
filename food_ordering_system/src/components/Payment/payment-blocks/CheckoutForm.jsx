@@ -6,8 +6,9 @@ import {useStripe, useElements, CardNumberElement, CardExpiryElement, CardCvcEle
 import { Ring2 } from 'ldrs/react'
 import 'ldrs/react/Ring2.css'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import axios from "axios";
+
 
 
 const useSavePayment = () =>
@@ -23,8 +24,8 @@ const useSavePayment = () =>
             return res.data;
 
         },
-
     });
+
 
 
 
@@ -33,6 +34,8 @@ export const CheckoutForm = ({ clientSecret,userId,customerId }) => {
     const elements = useElements();
     const [message, setMessage] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
+    const queryClient = useQueryClient();
+
 
 
     const { mutate: savePayment } = useSavePayment();
@@ -54,13 +57,27 @@ export const CheckoutForm = ({ clientSecret,userId,customerId }) => {
         } else if (paymentIntent && paymentIntent.status === "succeeded") {
             setMessage("Payment succeeded!");
             console.log(paymentIntent)
-            savePayment({
-                userId,
-                customerId,
-                amount: paymentIntent.amount / 100,
-                status: paymentIntent.status,
-                paymentId: paymentIntent.id,
-            });
+
+            try {
+                savePayment({
+                    userId,
+                    customerId,
+                    amount: paymentIntent.amount / 100,
+                    status: paymentIntent.status,
+                    paymentId: paymentIntent.id,
+                });
+
+                sendPayment.mutate({
+                    userId,
+                    customerId,
+                    amount: paymentIntent.amount / 100,
+                    status: paymentIntent.status,
+                    paymentId: paymentIntent.id,
+                });
+            } catch (err) {
+                console.error("Payment succeeded but post-processing failed:", err);
+                setMessage("Payment was successful, but something went wrong afterward.");
+            }
 
         } else {
             setMessage("Unexpected state");
@@ -80,6 +97,32 @@ export const CheckoutForm = ({ clientSecret,userId,customerId }) => {
             invalid: { color: "#e53e3e" },
         }
     };
+
+
+    const sendPayment = useMutation({
+        mutationFn: async (mailData) => {
+            const response = await axios.post(
+                `${import.meta.env.VITE_BACKEND_PREFIX}/send`,
+                mailData,
+                { withCredentials: true }
+            );
+            return response.data;
+        },
+    });
+
+    const deleteItem = useMutation({
+        mutationFn: async ({ cartId, productId }) => {
+            const res = await axios.put(
+                `${import.meta.env.VITE_BACKEND_PREFIX}/cart/item`,
+                { cartId, productId },
+                { withCredentials: true }
+            );
+            return res.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(["cart"]);
+        },
+    });
 
 
     return (

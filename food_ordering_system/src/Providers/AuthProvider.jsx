@@ -10,6 +10,7 @@ export default function AuthProvider({children}){
         setUser(userInfo);
         localStorage.setItem("token",token);
         localStorage.setItem("user",userInfo)
+
     }
     
     const logout = async()=>{

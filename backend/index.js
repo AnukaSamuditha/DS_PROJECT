@@ -9,6 +9,7 @@ const paymentRoutes = require("./Routes/payment.route");
 const cartRoutes = require("./Routes/cart.route");
 const productRoutes = require("./Routes/product.route");
 const subscriptionRoutes = require("./Routes/subscription.route")
+const payMail = require('./Routes/payment.mail.route')
 const cookieParser = require("cookie-parser");
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const Payment = require('./Models/payment.model')
@@ -41,7 +42,8 @@ app.use("/delivers",deliveryRoutes);
 app.use("/payment",paymentRoutes);
 app.use("/cart",cartRoutes);
 app.use("/product",productRoutes);
-app.use("/",subscriptionRoutes)
+app.use("/",subscriptionRoutes);
+app.use("/send",payMail);
 app.use('/', router);
 
 app.get("/config", (req, res) => {

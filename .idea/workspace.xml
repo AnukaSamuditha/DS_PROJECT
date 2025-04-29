@@ -5,13 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4dceb81-59b2-4c40-9560-da4403cbca5f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/backend/Routes/payment.mail.route.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Routes/subscription.route.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Routes/subscription.route.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/food_ordering_system/service-worker.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/service-worker.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/food_ordering_system/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/Auth/SignUp.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/Auth/SignUp.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/components/NavBar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/components/NavBar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/Providers/AuthProvider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/Providers/AuthProvider.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/components/Payment/payment-blocks/CheckoutForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/components/Payment/payment-blocks/CheckoutForm.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,9 +20,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="JavaScript File" />
         <option value="JSX File" />
         <option value="Dockerfile" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -85,6 +84,7 @@
       <recent name="$PROJECT_DIR$/backend/Routes" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backend/Routes" />
       <recent name="$PROJECT_DIR$/food_ordering_system" />
       <recent name="$PROJECT_DIR$/food_ordering_system/public" />
       <recent name="$PROJECT_DIR$/food_ordering_system/src/components/Payment" />
@@ -140,7 +140,7 @@
       <workItem from="1744466515296" duration="25712000" />
       <workItem from="1744906376342" duration="158371000" />
       <workItem from="1745763295595" duration="31184000" />
-      <workItem from="1745870842908" duration="5360000" />
+      <workItem from="1745870842908" duration="21104000" />
     </task>
     <servers />
   </component>
