@@ -4,9 +4,11 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 
 const authenticate = async (req, res, next) => {
+
   //const token = await req.headers.authorization?.split(" ")[1];
   const token = req.cookies.token;
   
+
   if (!token) {
     return res.status(401).json({
       message: "No token available, authorization denied",
@@ -35,6 +37,7 @@ const authorize = (roles = []) => {
   return (req, res, next) => {
     try {
       //const token = req.headers.authorization?.split(" ")[1];
+
       const token = req.cookies.token;
       if (!token) {
         return res.status(401).json({

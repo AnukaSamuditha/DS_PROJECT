@@ -15,12 +15,15 @@ import RequireAuth from "./components/RequireAuth";
 import PreOrder from "./components/PreOrder";
 import GoogleMapProvider from "./Providers/GoogleMapProvider";
 import Success from "./pages/success";
+import Cart from "./components/Payment/Cart";
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
+          <Route path="/cart" element={<Cart/>}/>
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
       </Route>
@@ -63,9 +66,22 @@ const router = createBrowserRouter(
         }
       />
     </>
+
   )
 );
 
 export default function App() {
+
+
+    const channel = new BroadcastChannel('userId_channel');
+    channel.onmessage = (event) => {
+        if (event.data.requestUserId) {
+            const loggedInUserId = localStorage.getItem("userId");
+            channel.postMessage({ userId: loggedInUserId });
+        }
+    };
+
   return <RouterProvider router={router} />;
 }
+
+

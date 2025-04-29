@@ -1,12 +1,10 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import {createContext, useContext, useState} from 'react'
 
 export const AuthContext = createContext();
 
-export default function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
-    const [isInitialized, setIsInitialized] = useState(false);
+export default function AuthProvider({children}){
+    
+    const [user,setUser] = useState(null);
 
     const { data, isLoading, isFetching } = useQuery({
         queryKey: ["user_self"],
@@ -29,23 +27,27 @@ export default function AuthProvider({ children }) {
         }
     }, [data, isLoading]);
 
-    const login = async (userInfo) => {
-        //setUser(userInfo);
-    };
+    const login = async(userInfo,token)=>{
+        setUser(userInfo);
+        localStorage.setItem("token",token);
+        localStorage.setItem("user",userInfo)
+    }
 
-    const logout = async () => {
-        //setUser(null);
-    };
+    const logout = async()=>{
+        setUser(null);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user")
+    }
 
     if (!isInitialized) {
         return <div>Loading authentication...</div>;
     }
-    
-    return (
-        <AuthContext.Provider value={{ login, logout, user, isLoading: isLoading || isFetching }}>
+
+    return(
+        <AuthContext.Provider value={{login,logout,user}}>
             {children}
         </AuthContext.Provider>
-    );
+    )
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () =>useContext(AuthContext);
