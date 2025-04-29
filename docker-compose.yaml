@@ -3,6 +3,7 @@ version: "3.8"
 services:
   web:
     depends_on:
+      - redis
       - restaurant_service
       - payment_service
       - delivery_service
@@ -13,56 +14,83 @@ services:
     ports:
       - 5173:5173
 
-    environment:
-      VITE_SERVICE1_API_URL: http://localhost:3001
-      VITE_SERVICE2_API_URL: http://localhost:3002
+    env_file:
+      - .food_ordering_system/.env
 
     develop:
       watch:
-        - path: ./frontend/package.json
+        - path: ./food_ordering_system/package.json
           action: rebuild
-        - path: ./frontend/package-lock.json
+        - path: ./food_ordering_system/package-lock.json
           action: rebuild
 
-        - path: ./frontend
+        - path: ./food_ordering_system
           target: /app
           action: sync
 
-  service1:
-    build: ./backend/service1
+  restaurant_service:
+    build: ./microservices/restaurant_service
+    container_name: restaurant_service
 
     ports:
-      - 3001:3001
+      - 5001:5001
 
-    environment:
-      DB_URL: mongodb+srv://it22626356:zKTnE47D9pO8xtdY@mernapp.lapufmd.mongodb.net/?retryWrites=true&w=majority&appName=MERNapp
+    env_file:
+      - ./microservices/restaurant_service/.env
 
     develop:
       watch:
-        - path: ./backend/service1/package.json
+        - path: ./microservices/restaurant_service/.env
           action: rebuild
-        - path: ./backend/service1/package-lock.json
+        - path: ./microservices/restaurant_service/.env
           action: rebuild
 
-        - path: ./backend/service1
+        - path: ./microservices/restaurant_service/.env
           target: /app
           action: sync
-  service2:
-    build: ./backend/service2
+  delivery_service:
+    build: ./microservices/delivery_service
+    container_name: delivery_service
 
     ports:
-      - 3002:3002
+      - 5000:5000
 
-    environment:
-      DB_URL: mongodb+srv://it22626356:zKTnE47D9pO8xtdY@mernapp.lapufmd.mongodb.net/?retryWrites=true&w=majority&appName=MERNapp
+    env_file:
+      - ./microservices/delivery_service/.env
 
     develop:
       watch:
-        - path: ./backend/service2/package.json
+        - path: ./microservices/delivery_service/.env
           action: rebuild
-        - path: ./backend/service2/package-lock.json
+        - path: ./microservices/delivery_service/.env
           action: rebuild
 
-        - path: ./backend/service2
+        - path: ./microservices/delivery_service/.env
           target: /app
           action: sync
+
+  payment_service:
+    build: ./microservices/payment_service
+    container_name: payment_service
+
+    ports:
+      - 5002:5002
+
+    env_file:
+      - ./microservices/payment_service/.env
+
+    develop:
+      watch:
+        - path: ./microservices/payment_service/.env
+          action: rebuild
+        - path: ./microservices/payment_service/.env
+          action: rebuild
+
+        - path: ./microservices/payment_service/.env
+          target: /app
+          action: sync
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - 6379:6379
