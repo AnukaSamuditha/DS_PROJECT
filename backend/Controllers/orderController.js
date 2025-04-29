@@ -1,37 +1,78 @@
 const Order = require('../Models/orderModel');
+const Restaurant = require('../Models/RestaurantModel');
+const MenuItem = require('../Models/MenuItemModel');
 
 exports.placeOrder = async (req, res) => {
   try {
-    const orderData = req.body;
-    const totalAmount = orderData.amount + (orderData.deliveryFee || 0);
+    const { restaurantId, items: orderedItems, deliveryFee, paymentMethod, userLocation, notes } = req.body;
 
-    const user = req.user.user || req.user; // ✅ Fixed to handle both authenticate/authorize properly
+    const user = req.user.user || req.user;
 
+    // 1. Fetch restaurant from DB
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    // 2. Fetch and validate each MenuItem
+    const fetchedItems = [];
+    let amount = 0;
+
+    for (const item of orderedItems) {
+      const menuItem = await MenuItem.findById(item.menuItemId);
+      if (!menuItem || !menuItem.isAvailable) {
+        return res.status(404).json({ message: `Menu item not found or unavailable: ${item.menuItemId}` });
+      }
+
+      const itemTotal = menuItem.price * item.quantity;
+      amount += itemTotal;
+
+      fetchedItems.push({
+        menuItemId: menuItem._id,
+        name: menuItem.name,
+        quantity: item.quantity,
+        price: menuItem.price
+      });
+    }
+
+    const totalAmount = amount + (deliveryFee || 0);
+
+    // 3. Create new Order
     const newOrder = new Order({
       user: {
         id: user.id,
         name: user.email,
-        location: orderData.user?.location || {}
+        location: userLocation || {}
       },
-      shop: orderData.shop,
-      items: orderData.items,
-      amount: orderData.amount,
-      deliveryFee: orderData.deliveryFee,
+      shop: {
+        id: restaurant._id,
+        name: restaurant.name,
+        location: {
+          address: restaurant.address,
+          lat: restaurant.location.coordinates[1],
+          lng: restaurant.location.coordinates[0]
+        }
+      },
+      items: fetchedItems,
+      amount,
+      deliveryFee,
       totalAmount,
-      paymentMethod: orderData.paymentMethod,
-      notes: orderData.notes || ''
+      paymentMethod,
+      notes: notes || ''
     });
 
     const savedOrder = await newOrder.save();
     res.status(201).json({ message: "Order placed successfully", order: savedOrder });
+
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Failed to place order", error: error.message });
   }
 };
 
 exports.getOrdersByUser = async (req, res) => {
   try {
-    const user = req.user.user || req.user; // ✅ Fixed
+    const user = req.user.user || req.user;
     const userId = user.id;
 
     const orders = await Order.find({ 'user.id': userId });
