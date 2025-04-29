@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b4dceb81-59b2-4c40-9560-da4403cbca5f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/backend/Controllers/cart.controller.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/Controllers/product.controller.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/Models/cart.model.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/Models/product.model.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/Routes/cart.route.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/Routes/product.route.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/food_ordering_system/src/components/orders/OrderItem.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.env.example" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Auth/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Auth/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Auth/redisClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Auth/redisClient.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Controllers/deliveryController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Controllers/deliveryController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Controllers/orderController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Controllers/orderController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Controllers/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Controllers/userController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Models/MenuItemModel.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Models/MenuItemModel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Models/RestaurantModel.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Models/RestaurantModel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Models/User.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Models/orderModel.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Models/orderModel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Routes/deliveryRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Routes/deliveryRoutes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Routes/orderRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Routes/orderRoutes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Routes/userRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Routes/userRoutes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Socket/socketHandler.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Socket/socketHandler.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Utils/getNearByRiders.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Utils/getNearByRiders.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/.env.example" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/Auth/SignIn.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/Auth/SignIn.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/Layout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/Layout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/components/orders/placeOrder.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/components/orders/placeOrder.jsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dockerfile" />
+        <option value="JSX File" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Sashirusliit&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/AnukaSamuditha/DS_PROJECT.git&quot;,
+    &quot;accountId&quot;: &quot;e9258bd5-6d67-435f-922d-a6e5734d3838&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/food_ordering_system/src/App.css" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2ux7NfmmVUV4puDO1NpqYlUK7Bq" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "fix/ordering-system",
+    "javascript.nodejs.core.library.configured.version": "22.13.1",
+    "javascript.nodejs.core.library.typings.version": "22.13.14",
+    "last_opened_file_path": "/Users/Sashi/WebstormProjects/DS_PROJECT/backend/Controllers",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.dev (1).executor": "Run",
+    "npm.dev.executor": "Run",
+    "npm.start.executor": "Run",
+    "settings.editor.selected.configurable": "com.codeium.AppSettingsConfigurable",
+    "ts.external.directory.path": "/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backend/Controllers" />
+      <recent name="$PROJECT_DIR$/backend/Models" />
+      <recent name="$PROJECT_DIR$/backend/Routes" />
+      <recent name="$PROJECT_DIR$/food_ordering_system/src/components/Payment/payment-blocks/images" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backend/Routes" />
+      <recent name="$PROJECT_DIR$/backend/Controllers" />
+      <recent name="$PROJECT_DIR$/backend/Models" />
+      <recent name="$PROJECT_DIR$/food_ordering_system" />
+      <recent name="$PROJECT_DIR$/food_ordering_system/public" />
+    </key>
+  </component>
+  <component name="RunManager" selected="npm.dev">
+    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/food_ordering_system/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/backend/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.dev" />
+        <item itemvalue="npm.start" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-e768b9ed790e-JavaScript-WS-243.21565.180" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b4dceb81-59b2-4c40-9560-da4403cbca5f" name="Changes" comment="" />
+      <created>1743178332988</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1743178332988</updated>
+      <workItem from="1743178334222" duration="30937000" />
+      <workItem from="1743974995988" duration="23000" />
+      <workItem from="1744397254250" duration="722000" />
+      <workItem from="1744466515296" duration="25712000" />
+      <workItem from="1744906376342" duration="158371000" />
+      <workItem from="1745763295595" duration="31184000" />
+      <workItem from="1745870842908" duration="21104000" />
+      <workItem from="1745929674537" duration="3750000" />
+      <workItem from="1745933518858" duration="12047000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

@@ -1,45 +1,30 @@
 const mongoose = require('mongoose');
 
-const locationSchema = new mongoose.Schema({
-  lat: Number,
-  lng: Number,
-  address: String
-});
-
-const itemSchema = new mongoose.Schema({
-  menuItemId: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem' },
-  name: String,
-  quantity: Number,
-  price: Number
-});
-
 const orderSchema = new mongoose.Schema({
-  user: {
-    id: { type: String, required: true },
-    name: String,
-    location: locationSchema
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
-  shop: {
-    id: { type: String, required: true },
-    name: String,
-    location: locationSchema
+  cartId:{
+    type:String,
+    required:true
   },
-  items: [itemSchema],
-  amount: { type: Number, required: true },
-  deliveryFee: { type: Number, required: false },
-  totalAmount: { type: Number, required: false },
-  status: {
-    type: String,
-    enum: ['pending', 'confirmed', 'preparing', 'delivering', 'delivered', 'cancelled'],
-    default: 'pending'
+  resId:{
+    type:String,
+    required:true
   },
-  placedAt: { type: Date, default: Date.now },
-  paymentMethod: {
-    type: String,
-    enum: ['cash_on_delivery', 'card', 'online'],
-    required: true
+  total:{
+    type:Number,
+    required:true
   },
-  notes: String
+  status:{
+    type:String,
+    enum:["refunded","accepted"],
+    required:true
+  }
+
+
 });
 
 module.exports = mongoose.model('Order', orderSchema);

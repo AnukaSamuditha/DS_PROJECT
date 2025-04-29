@@ -10,6 +10,8 @@ const server = http.createServer(app);
 const {socketHandler} = require('./Socket/socketHandler');
 const deliveryRoutes = require('./Routes/deliveryRoutes');
 const orderRoutes = require("./Routes/orderRoutes")
+const cartRoutes = require("./Routes/cart.route");
+const productRoutes = require("./Routes/product.route")
 const cookieParser = require('cookie-parser');
 require("dotenv").config();
 
@@ -21,6 +23,9 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/users",userRoutes);
 app.use("/orders", orderRoutes);
+app.use("/cart",cartRoutes);
+app.use("/product",productRoutes);
+
 //app.use("/delivers",deliveryRoutes);
 
 const io = new Server(server,{
@@ -34,7 +39,7 @@ const io = new Server(server,{
 socketHandler(io);
 
 mongoose
-  .connect(process.env.DB_URL)
+  .connect(process.env.MONGO_DB_URL)
   .then(() => {
     console.log("Database connected successfully");
     //connectRedis();

@@ -147,5 +147,14 @@ body {
   .slide-left-right {
     animation: slideLeftRight 1.5s ease-in-out infinite;
   }
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
   
   
