@@ -2,19 +2,24 @@
 
 @plugin 'tailwindcss-animate';
 
+
 @custom-variant dark (&:is(.dark *));
 @import "tailwindcss";
 
 *{
-    box-sizing:border-box,
+    box-sizing:border-box;
 }
 body {
    /* font-family: "Geist", sans-serif; 
     background-color: black;*/
     font-family: "Geist", sans-serif; 
-    background-color: white; /* 🔥 Change black to white */
     color: #1f2937; /* text-gray-800 */
+    background-color: black;
 
+}
+.swal-cancel-button {
+    color: black !important;
+    border: 1px solid #ccc;
 }
 
 :root {
@@ -125,17 +130,45 @@ body {
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
     }
 }
 
 .custom-border-gradient {
-    border: 1px solid transparent; /* Set a solid transparent border */
-    border-radius: 100px; /* Make the border fully rounded */
-    border-image: linear-gradient(to right, #ffaa40, #9c40ff, #ffaa40) 1; /* Apply the gradient to the border */
+    border: 1px solid transparent;
+    border-radius: 100px;
+    border-image: linear-gradient(to right, #ffaa40, #9c40ff, #ffaa40) 1;
+}
+
+
+@keyframes slideLeftRight {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-5px);
+    }
+}
+
+.slide-left-right {
+    animation: slideLeftRight 1.5s ease-in-out infinite;
   }
   
+svg.star-svg {
+    display: inline;
+}
+ 
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; 
+  scrollbar-width: none;
+}
+

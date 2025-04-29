@@ -2,8 +2,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import AuthProvider from "./Providers/AuthProvider.jsx";
 import QueryClientProviderCom from "./Providers/QueryClientProvider.jsx";
-import { ToastContainer } from "react-toastify"; // Import ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import the default CSS for react-toastify
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 createRoot(document.getElementById("root")).render(
 <QueryClientProviderCom>
@@ -23,5 +23,4 @@ createRoot(document.getElementById("root")).render(
       />
   </AuthProvider>
 </QueryClientProviderCom>
-
 );
