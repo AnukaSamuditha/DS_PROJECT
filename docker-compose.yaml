@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  web:
+    depends_on:
+      - restaurant_service
+      - payment_service
+      - delivery_service
+      - order_service
+
+    build: ./food_ordering_system
+
+    ports:
+      - 5173:5173
+
+    environment:
+      VITE_SERVICE1_API_URL: http://localhost:3001
+      VITE_SERVICE2_API_URL: http://localhost:3002
+
+    develop:
+      watch:
+        - path: ./frontend/package.json
+          action: rebuild
+        - path: ./frontend/package-lock.json
+          action: rebuild
+
+        - path: ./frontend
+          target: /app
+          action: sync
+
+  service1:
+    build: ./backend/service1
+
+    ports:
+      - 3001:3001
+
+    environment:
+      DB_URL: mongodb+srv://it22626356:zKTnE47D9pO8xtdY@mernapp.lapufmd.mongodb.net/?retryWrites=true&w=majority&appName=MERNapp
+
+    develop:
+      watch:
+        - path: ./backend/service1/package.json
+          action: rebuild
+        - path: ./backend/service1/package-lock.json
+          action: rebuild
+
+        - path: ./backend/service1
+          target: /app
+          action: sync
+  service2:
+    build: ./backend/service2
+
+    ports:
+      - 3002:3002
+
+    environment:
+      DB_URL: mongodb+srv://it22626356:zKTnE47D9pO8xtdY@mernapp.lapufmd.mongodb.net/?retryWrites=true&w=majority&appName=MERNapp
+
+    develop:
+      watch:
+        - path: ./backend/service2/package.json
+          action: rebuild
+        - path: ./backend/service2/package-lock.json
+          action: rebuild
+
+        - path: ./backend/service2
+          target: /app
+          action: sync
