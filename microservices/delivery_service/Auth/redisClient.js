@@ -2,7 +2,7 @@ const redis = require('redis');
 require('dotenv').config();
 const PORT = process.env.REDIS_PORT;
 
-const REDIS_HOST = '127.0.0.1';
+const REDIS_HOST = 'redis';
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
 
 const redisClient = redis.createClient({

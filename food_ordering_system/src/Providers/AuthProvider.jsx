@@ -13,7 +13,7 @@ export default function AuthProvider({ children }) {
     queryFn: async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_PREFIX}/users/self`,
+          `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/users/self`,
           {
             withCredentials: true,
           }

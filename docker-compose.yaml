@@ -1,4 +1,4 @@
-version: "3.8"
+
 
 services:
   web:
@@ -7,7 +7,6 @@ services:
       - restaurant_service
       - payment_service
       - delivery_service
-      - order_service
 
     build: ./food_ordering_system
 
@@ -15,7 +14,7 @@ services:
       - 5173:5173
 
     env_file:
-      - .food_ordering_system/.env
+       - ./food_ordering_system/.env
 
     develop:
       watch:
@@ -40,9 +39,9 @@ services:
 
     develop:
       watch:
-        - path: ./microservices/restaurant_service/.env
+        - path: ./microservices/restaurant_service/package.json
           action: rebuild
-        - path: ./microservices/restaurant_service/.env
+        - path: ./microservices/restaurant_service/package-lock.json
           action: rebuild
 
         - path: ./microservices/restaurant_service/.env
@@ -60,9 +59,9 @@ services:
 
     develop:
       watch:
-        - path: ./microservices/delivery_service/.env
+        - path: ./microservices/delivery_service/package.json
           action: rebuild
-        - path: ./microservices/delivery_service/.env
+        - path: ./microservices/delivery_service/package-lock.json
           action: rebuild
 
         - path: ./microservices/delivery_service/.env
@@ -81,9 +80,9 @@ services:
 
     develop:
       watch:
-        - path: ./microservices/payment_service/.env
+        - path: ./microservices/payment_service/package.json
           action: rebuild
-        - path: ./microservices/payment_service/.env
+        - path: ./microservices/payment_service/package-lock.json
           action: rebuild
 
         - path: ./microservices/payment_service/.env

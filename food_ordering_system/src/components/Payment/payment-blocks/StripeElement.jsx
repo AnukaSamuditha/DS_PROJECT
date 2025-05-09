@@ -10,7 +10,7 @@ export const StripeElement = ({cartId,totalPrice,userId,user}) => {
     const [clientSecret,setClientSecret] = useState("")
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_BACKEND_PREFIX}/config`)
+        axios.get(`${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/config`)
             .then((response) => {
                 const { publishableKey } = response.data;
                 console.log(publishableKey);
@@ -30,7 +30,7 @@ export const StripeElement = ({cartId,totalPrice,userId,user}) => {
         const createPaymentIntent = async () => {
             try {
                 const response = await axios.post(
-                    `${import.meta.env.VITE_BACKEND_PREFIX}/create-payment-intent`,
+                    `${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/create-payment-intent`,
                     {
                         cartId,
                         userId,

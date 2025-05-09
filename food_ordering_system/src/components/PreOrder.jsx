@@ -51,7 +51,7 @@ export default function PreOrder(){
     const {data,isFetched} = useQuery({
       queryKey:["order_data"],
       queryFn:async()=>{
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_PREFIX}/orders/order/6801230846101090818500c7`,{
+        const res = await axios.get(`${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/orders/order/6801230846101090818500c7`,{
           withCredentials:true
         })
 

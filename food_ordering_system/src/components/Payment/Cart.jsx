@@ -13,7 +13,7 @@ export default function Cart(){
   const { data: cartData, error: cartError, isLoading: cartLoading } = useQuery({
     queryKey: ["cart"],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_PREFIX}/cart`, {
+      const res = await axios.get(`${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/cart`, {
         withCredentials: true,
       });
       return res.data;
@@ -28,7 +28,7 @@ export default function Cart(){
 
   const updateQuantity = useMutation({
     mutationFn: async ({ productId, quantity }) => {
-      const res = await axios.patch(`${import.meta.env.VITE_BACKEND_PREFIX}/cart/${cartId}`,
+      const res = await axios.patch(`${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/cart/${cartId}`,
           { userId, productId, quantity },
           { withCredentials: true }
       );
@@ -43,7 +43,7 @@ export default function Cart(){
   const deleteItem = useMutation({
     mutationFn: async ({ cartId, productId }) => {
       const res = await axios.put(
-          `${import.meta.env.VITE_BACKEND_PREFIX}/cart/item`,
+          `${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/cart/item`,
           { cartId, productId },
           { withCredentials: true }
       );
@@ -61,7 +61,7 @@ export default function Cart(){
   const { data: userData, error: userError, isLoading: userLoading } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_PREFIX}/users/get-user`, {
+      const res = await axios.get(`${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/users/get-user`, {
         withCredentials: true,
       });
       return res.data;
@@ -82,7 +82,7 @@ export default function Cart(){
     queryFn: async () => {
       const res = await Promise.all(
           productIds.map((id) =>
-              axios.get(`${import.meta.env.VITE_BACKEND_PREFIX}/product/${id}`, {
+              axios.get(`${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/product/${id}`, {
                 withCredentials: true,
               }).then(res => res.data)
           )

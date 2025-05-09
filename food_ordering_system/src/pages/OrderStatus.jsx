@@ -97,7 +97,7 @@ export default function OrderStatus({ isLoaded }) {
     queryFn: async () => {
       console.log("accepted rider query runs..");
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/users/${acceptedRiderId}`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/users/${acceptedRiderId}`,
         {
           withCredentials: true,
         }
@@ -116,7 +116,7 @@ export default function OrderStatus({ isLoaded }) {
         return;
       }
       const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/${order._id}`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/orders/${order._id}`,
         {
           deliveryFee: deliveryCost,
           totalAmount: deliveryCost + order.amount,
@@ -149,7 +149,7 @@ export default function OrderStatus({ isLoaded }) {
         return;
       }
       const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/${order._id}`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/orders/${order._id}`,
         {
           driverId: acceptedRiderId,
         },
@@ -175,7 +175,7 @@ export default function OrderStatus({ isLoaded }) {
         return;
       }
       const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/${order._id}`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/orders/${order._id}`,
         {
           status: status,
         },
@@ -272,7 +272,7 @@ export default function OrderStatus({ isLoaded }) {
         return;
       }
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/status/${order._id}`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/orders/status/${order._id}`,
         {
           withCredentials: true,
         }
@@ -297,7 +297,7 @@ export default function OrderStatus({ isLoaded }) {
       }
 
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/delivers/rate`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/delivers/rate`,
         {
           id: acceptedRiderId,
           rating: ratingRef.current,

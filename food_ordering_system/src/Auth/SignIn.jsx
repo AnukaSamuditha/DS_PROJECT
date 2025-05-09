@@ -1,4 +1,4 @@
-import Label from "@/components/ui/label";
+import Label from "@/components/ui/Label";
 import InputField from "@/components/ui/InputField";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { z } from "zod";
@@ -33,7 +33,7 @@ export default function SignIn() {
   const { mutate, error } = useMutation({
     mutationFn: async (data) => {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/users/login`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/users/login`,
         data,
         {
           withCredentials: true,
@@ -45,13 +45,12 @@ export default function SignIn() {
       console.log("User were logged in sucessfully", res);
       localStorage.setItem("role", res?.data?.role);
       localStorage.setItem("userId", res?.data?.id);
-      console.log(localStorage.getItem("role"), "wow");
       login(res.data);
       reset();
       redirectedFrom ? navigate(redirectedFrom) : navigate("/");
     },
     onError: (error) => {
-      console.log("Error in logging the user", error);
+      console.log("Error in logging the user", error.message);
     },
   });
 

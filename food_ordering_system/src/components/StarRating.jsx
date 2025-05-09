@@ -10,7 +10,7 @@ export default function StarRating({ rating = 0, outOf = 5 }) {
         {Array.from({ length: emptyStars }).map((_, i) => (
           <span key={`empty-${i}`} className="text-zinc-500">
             &#9733;
-          </span> // ☆ but styled like dimmed star
+          </span>
         ))}
       </div>
     );

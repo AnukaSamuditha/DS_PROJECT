@@ -206,7 +206,7 @@ export default function StartDelivery({ isLoaded }) {
         throw new Error("Driver id cannot be undefined!");
       }
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/delivers/${driverId}/status`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/delivers/${driverId}/status`,
         {
           withCredentials: true,
         }
@@ -226,7 +226,7 @@ export default function StartDelivery({ isLoaded }) {
         return;
       }
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/status/${order._id}`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/orders/status/${order._id}`,
         {
           withCredentials: true,
         }
@@ -259,7 +259,7 @@ export default function StartDelivery({ isLoaded }) {
     queryKey: ["convert_cords"],
     queryFn: async () => {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/delivers/coords`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/delivers/coords`,
         locationRef.current,
         {
           withCredentials: true,
@@ -278,7 +278,7 @@ export default function StartDelivery({ isLoaded }) {
         throw new Error("User id is not defined");
       }
       const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/delivers/${userId}/deliver`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/delivers/${userId}/deliver`,
         null,
         {
           withCredentials: true,
@@ -310,7 +310,7 @@ export default function StartDelivery({ isLoaded }) {
     queryKey: ["day_orders"],
     queryFn: async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/day/${user.user._id}`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/orders/day/${user.user._id}`,
         {
           withCredentials: true,
         }

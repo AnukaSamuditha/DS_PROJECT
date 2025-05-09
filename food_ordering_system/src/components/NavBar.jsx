@@ -15,7 +15,7 @@ export default function NavBar() {
     queryKey: ["user"],
     queryFn: async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/users/self`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/users/self`,
         {
           withCredentials: true,
         }
@@ -163,7 +163,7 @@ export default function NavBar() {
             </>
           )}
 
-          {userRole === "regular" && (
+          {(userRole === "regular" || "driver") && (
             <>
               <li>
                 <NavLink
@@ -225,7 +225,7 @@ export default function NavBar() {
             <li>
               <button
                 onClick={handleLogout}
-                className="bg-white hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-lg transition"
+                className="bg-black hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-lg transition"
               >
                 Logout
               </button>

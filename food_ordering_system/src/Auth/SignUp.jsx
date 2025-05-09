@@ -1,4 +1,4 @@
-import Label from "@/components/ui/label";
+import Label from "@/components/ui/Label";
 import InputField from "@/components/ui/InputField";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { z } from "zod";
@@ -38,7 +38,7 @@ export default function SignUp() {
   const { mutate } = useMutation({
     mutationFn: async (data) => {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/users`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/users`,
         data
       );
       return res;

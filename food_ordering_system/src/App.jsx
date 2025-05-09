@@ -30,6 +30,7 @@ import Cart from "./components/Payment/Cart";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
+    <>
     <Route path="/" element={<Layout />}>
       <Route index element={<Home />} />
       <Route path="/signup" element={<SignUp />} />
@@ -102,6 +103,31 @@ const router = createBrowserRouter(
         }
       />
       <Route
+        path="/admin/users"
+        element={
+          <RequireAuth>
+            <AdminUserManagement />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin/restaurants"
+        element={
+          <RequireAuth>
+            <AdminRestaurantManagement />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/restaurants/:id"
+        element={
+          <RequireAuth>
+            <RestaurantDetails />
+          </RequireAuth>
+        }
+      />
+    </Route>
+     <Route
         path="/pre-order"
         element={
           <RequireAuth>
@@ -130,30 +156,6 @@ const router = createBrowserRouter(
         }
       />
       <Route
-        path="/admin/users"
-        element={
-          <RequireAuth>
-            <AdminUserManagement />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/admin/restaurants"
-        element={
-          <RequireAuth>
-            <AdminRestaurantManagement />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/restaurants/:id"
-        element={
-          <RequireAuth>
-            <RestaurantDetails />
-          </RequireAuth>
-        }
-      />
-      <Route
         path="/success"
         element={
           <RequireAuth>
@@ -161,7 +163,7 @@ const router = createBrowserRouter(
           </RequireAuth>
         }
       />
-    </Route>
+    </>
   )
 );
 

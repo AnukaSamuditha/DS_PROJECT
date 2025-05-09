@@ -17,7 +17,7 @@ const useSavePayment = () =>
         mutationFn: async (paymentData) => {
             console.log(paymentData)
             const res = await axios.post(
-                `${import.meta.env.VITE_BACKEND_PREFIX}/payment/create`,
+                `${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/payment/create`,
                 paymentData,
                 { withCredentials: true }
             );
@@ -102,7 +102,7 @@ export const CheckoutForm = ({ clientSecret,userId,customerId }) => {
     const sendPayment = useMutation({
         mutationFn: async (mailData) => {
             const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_PREFIX}/send`,
+                `${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/send`,
                 mailData,
                 { withCredentials: true }
             );
@@ -113,7 +113,7 @@ export const CheckoutForm = ({ clientSecret,userId,customerId }) => {
     const deleteItem = useMutation({
         mutationFn: async ({ cartId, productId }) => {
             const res = await axios.put(
-                `${import.meta.env.VITE_BACKEND_PREFIX}/cart/item`,
+                `${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/cart/item`,
                 { cartId, productId },
                 { withCredentials: true }
             );

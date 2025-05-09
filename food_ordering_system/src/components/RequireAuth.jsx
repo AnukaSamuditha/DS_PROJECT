@@ -1,5 +1,4 @@
 import { useAuth } from "@/Providers/AuthProvider";
-import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router";
 import { Bouncy } from "ldrs/react";
 import "ldrs/react/Bouncy.css";
@@ -13,7 +12,7 @@ export default function RequireAuth({ children }) {
   }
 
   if (!isLoading) {
-    if (user && !user?.user._id) {
+    if (user && !user?.user?._id) {
       return <Navigate to={"/signin"} state={{ from: location }} replace />;
     }
   }

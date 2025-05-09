@@ -8,7 +8,7 @@ export default function CartItem({ item ,userId,onQuantityChange,deleteItem,cart
     const { data, isLoading, error } = useQuery({
         queryKey: ["product", item.productId._id],
         queryFn: async () => {
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_PREFIX}/product/${item.productId._id}`);
+            const res = await axios.get(`${import.meta.env.VITE_PAYMENT_SERVICE_PREFIX}/product/${item.productId._id}`);
             return res.data; // single product object expected in res.data.data
         },
     });
