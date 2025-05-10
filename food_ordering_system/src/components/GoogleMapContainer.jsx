@@ -6,7 +6,7 @@ import {
   OverlayView,
   DirectionsRenderer,
 } from "@react-google-maps/api";
-import { LocationMarker } from "./ui/LocationMarker";
+//import { LocationMarker } from "./ui/LocationMarker";
 import RiderMarker from "@/assets/rider_marker.png";
 import DestinationMarker from "@/assets/destination_marker.png";
 import UserMarker from "@/assets/user_marker.png";
@@ -138,7 +138,7 @@ export default function GoogleMapContainer({
         return;
       }
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/status/${order._id}`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/orders/status/${order._id}`,
         {
           withCredentials: true,
         }
@@ -293,7 +293,7 @@ export default function GoogleMapContainer({
     mutationFn: async (newStatus) => {
       console.log("orderStatusMutation method is called", newStatus);
       const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_PREFIX}/orders/${order._id}`,
+        `${import.meta.env.VITE_DELIVERY_SERVICE_PREFIX}/orders/${order._id}`,
         {
           status: newStatus,
         },
@@ -514,7 +514,7 @@ export default function GoogleMapContainer({
     }
   };
 
-  console.log("SINGLE RIDER LAT ", singleRiderInfo);
+  //console.log("SINGLE RIDER LAT ", singleRiderInfo);
   //console.log("SINGLE RIDER LNG ",singleRiderInfo);
 
   return isLoaded ? (

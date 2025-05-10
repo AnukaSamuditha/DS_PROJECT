@@ -137,7 +137,7 @@ export default function StartDelivery({isLoaded}) {
     },
     enabled: user.user._id ? true : false,
   });
-
+  
   const {
     data: currentLocationData,
     isFetching,

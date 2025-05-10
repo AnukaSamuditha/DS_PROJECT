@@ -1,6 +1,5 @@
 import {io} from 'socket.io-client';
 
-const URL = import.meta.env.VITE_BACKEND_PREFIX
-console.log("url",URL)
+const URL = import.meta.env.VITE_DELIVERY_SERVICE_PREFIX
 
 export const socket = io(URL);

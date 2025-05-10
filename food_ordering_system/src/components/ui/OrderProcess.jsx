@@ -36,7 +36,7 @@ export default function OrderProcess({ orderId,isOrderLive }) {
 
       const res = await axios.get(
         `${
-          import.meta.env.VITE_BACKEND_PREFIX
+          import.meta.env.VITE_DELIVERY_SERVICE_PREFIX
         }/orders/status/${orderId}`,
         {
           withCredentials: true,
