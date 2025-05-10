@@ -22,9 +22,12 @@ const orderSchema = new mongoose.Schema({
     type:String,
     enum:["refunded","accepted"],
     required:true
-  }
+  },
 
 
-});
+},
+    {
+      timestamps: true
+    });
 
 module.exports = mongoose.model('Order', orderSchema);

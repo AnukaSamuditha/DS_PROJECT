@@ -72,13 +72,23 @@ exports.placeOrder = async (req, res) => {
 
 exports.getOrdersByUser = async (req, res) => {
   try {
-    const user = req.user.user || req.user;
-    const userId = user.id;
 
-    const orders = await Order.find({ 'user.id': userId });
+    const user = req.user.user || {};
+    const userId = user._id || user.id;
+
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID not found' });
+    }
+
+    const orders = await Order.find({ userId: userId });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: 'No orders found for this user' });
+    }
 
     res.json({ orders });
   } catch (error) {
+    console.error('Error fetching orders:', error);
     res.status(500).json({ message: 'Failed to fetch orders', error: error.message });
   }
 };
