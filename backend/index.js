@@ -26,6 +26,9 @@ app.use("/orders", orderRoutes);
 app.use("/cart",cartRoutes);
 app.use("/product",productRoutes);
 
+
+app.use('/api', orderRoutes); // or just '/', if you want no prefix
+
 //app.use("/delivers",deliveryRoutes);
 
 const io = new Server(server,{

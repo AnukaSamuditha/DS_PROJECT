@@ -8,7 +8,6 @@ export default function MyOrders() {
   const queryClient = useQueryClient();
   const [editingOrder, setEditingOrder] = useState(null);
 
-  // 🔁 Fetch my orders
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["my-orders"],
     queryFn: async () => {
@@ -20,7 +19,7 @@ export default function MyOrders() {
     enabled: !!user,
   });
 
-  // ❌ Delete order
+
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
       await axios.delete(`${import.meta.env.VITE_BACKEND_PREFIX}/orders/${id}`, {
@@ -42,7 +41,7 @@ export default function MyOrders() {
     }
   };
 
-  // ✏️ Edit / Update order
+
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }) => {
       await axios.patch(`${import.meta.env.VITE_BACKEND_PREFIX}/orders/${id}`, data, {
@@ -63,7 +62,7 @@ export default function MyOrders() {
     setEditingOrder(order);
   };
 
-  // 🖥️ Loading and error states
+
   if (isLoading) return <p className="text-white text-center mt-10">Loading your orders...</p>;
   if (isError) return <p className="text-red-500 text-center mt-10">Error: {error.message}</p>;
 

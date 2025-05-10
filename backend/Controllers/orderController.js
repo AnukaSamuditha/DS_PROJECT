@@ -151,3 +151,38 @@ exports.deleteOrder = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete order', error: error.message });
   }
 };
+
+
+
+exports.createOrder = async (req, res) => {
+  try {
+    const { total, status } = req.body;
+    const { cartId, resId } = req.params;
+
+    const userId = req.user.user.id;
+    console.log(userId);
+
+    if (!userId || !cartId || !resId || !total || !status) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const newOrder = new Order({
+      userId,
+      cartId,
+      resId,
+      total,
+      status,
+    });
+
+    const savedOrder = await newOrder.save();
+
+    res.status(201).json({ success: true, order: savedOrder });
+  } catch (err) {
+    console.error('Create order error:', err);
+    res.status(500).json({ error: 'Failed to create order' });
+  }
+};
+
+
+
+

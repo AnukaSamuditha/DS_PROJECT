@@ -5,38 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4dceb81-59b2-4c40-9560-da4403cbca5f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/Controllers/cart.controller.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/Controllers/product.controller.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/Models/cart.model.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/Models/product.model.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/Routes/cart.route.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/Routes/product.route.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/food_ordering_system/src/components/orders/OrderItem.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.env.example" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Auth/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Auth/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Auth/redisClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Auth/redisClient.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Controllers/deliveryController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Controllers/deliveryController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Controllers/orderController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Controllers/orderController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Controllers/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Controllers/userController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Models/MenuItemModel.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Models/MenuItemModel.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Models/RestaurantModel.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Models/RestaurantModel.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Models/User.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Models/orderModel.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Models/orderModel.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Routes/deliveryRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Routes/deliveryRoutes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Routes/orderRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Routes/orderRoutes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Routes/userRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Routes/userRoutes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Socket/socketHandler.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Socket/socketHandler.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Utils/getNearByRiders.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Utils/getNearByRiders.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/food_ordering_system/.env.example" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/Auth/SignIn.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/Auth/SignIn.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/Layout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/Layout.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/components/orders/placeOrder.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/components/orders/placeOrder.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/food_ordering_system/src/components/orders/MyOrders.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/food_ordering_system/src/components/orders/MyOrders.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,27 +51,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "fix/ordering-system",
-    "javascript.nodejs.core.library.configured.version": "22.13.1",
-    "javascript.nodejs.core.library.typings.version": "22.13.14",
-    "last_opened_file_path": "/Users/Sashi/WebstormProjects/DS_PROJECT/backend/Controllers",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.dev (1).executor": "Run",
-    "npm.dev.executor": "Run",
-    "npm.start.executor": "Run",
-    "settings.editor.selected.configurable": "com.codeium.AppSettingsConfigurable",
-    "ts.external.directory.path": "/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;fix/ordering-system&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;22.13.1&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;22.13.14&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/Sashi/WebstormProjects/DS_PROJECT/backend/Controllers&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.dev (1).executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.start.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.codeium.AppSettingsConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/backend/Controllers" />
@@ -118,6 +89,16 @@
     </key>
   </component>
   <component name="RunManager" selected="npm.dev">
+    <configuration name="dev (1)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/backend/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/food_ordering_system/package.json" />
       <command value="run" />
@@ -141,6 +122,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="npm.dev" />
+        <item itemvalue="npm.dev (1)" />
         <item itemvalue="npm.start" />
       </list>
     </recent_temporary>
@@ -168,7 +150,30 @@
       <workItem from="1745763295595" duration="31184000" />
       <workItem from="1745870842908" duration="21104000" />
       <workItem from="1745929674537" duration="3750000" />
-      <workItem from="1745933518858" duration="12047000" />
+      <workItem from="1745933518858" duration="13661000" />
+      <workItem from="1745954373641" duration="13000" />
+      <workItem from="1746032894065" duration="190000" />
+      <workItem from="1746033100333" duration="42000" />
+      <workItem from="1746033494514" duration="81000" />
+      <workItem from="1746033604193" duration="3000" />
+      <workItem from="1746036276869" duration="50000" />
+      <workItem from="1746042087507" duration="173000" />
+      <workItem from="1746054766200" duration="9000" />
+      <workItem from="1746054987752" duration="39000" />
+      <workItem from="1746116933435" duration="2444000" />
+      <workItem from="1746126576864" duration="7000" />
+      <workItem from="1746132659944" duration="77000" />
+      <workItem from="1746163500839" duration="3000" />
+      <workItem from="1746169131194" duration="12000" />
+      <workItem from="1746176540878" duration="3291000" />
+      <workItem from="1746209520666" duration="141000" />
+      <workItem from="1746276987574" duration="37000" />
+      <workItem from="1746343090586" duration="50000" />
+      <workItem from="1746376794915" duration="239000" />
+      <workItem from="1746615277321" duration="30000" />
+      <workItem from="1746615365233" duration="8000" />
+      <workItem from="1746635659935" duration="209000" />
+      <workItem from="1746830619147" duration="1225000" />
     </task>
     <servers />
   </component>
