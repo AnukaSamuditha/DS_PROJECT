@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: restaurant-service-config
-data:
-
-  PORT: "5002"
-  DB_URL: "mongodb+srv://dinukalakmalwich7084:rL57gEuSOUwLDu11@restaurantmanagement.nydbhgk.mongodb.net/"
-  JWT_SECRET: "dfsdfsdfsdfw34234esfefewf"
