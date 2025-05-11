@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-service-config
+data:
+
+ PORT: "5001"
+ MONGO_DB_URL: "mongodb+srv://admin:YrpBxqtSEngp7Za8@restbackend.vfbr0.mongodb.net/?retryWrites=true&w=majority&appName=RESTBackend"
+ JWT_SECRET: "SECRET_CODE"
+ STRIPE_SECRET: "sk_test_51RD4hYRvL565VgPE4dabCShkAOJNnFpKqJpm5OSzXfpvW2LBwaFnybgIaLWRvEtQWZIwuV5lRlCAudkcxAe91ZA800yxAIkRYe"
+ STRIPE_PUBLISHABLE_KEY: "pk_test_51RD4hYRvL565VgPEEk1RQUEV1JOL7zztKekHa6bUFjrhR24nxPPNhyZ4g4qgoj282qdzhltFpale3eOQ9witdmos00ein8tk7J"
+ VAPID_PUBLIC_KEY: "BCCcTQkjgVuZN5E3VPeNB5TLg41TczbwEtQnLzNrhijzcVWFyNd-tHeDGvUv6JPI5vHwUwTozjKl9sNNboPTR_w"
+ VAPID_PRIVATE_KEY: "CQatBvZV4SeBA-bhcurSqEuB5yq2jckID8SZRY71LhY"

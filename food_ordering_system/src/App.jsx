@@ -27,107 +27,109 @@ import PreOrder from "./components/PreOrder";
 import GoogleMapProvider from "./Providers/GoogleMapProvider";
 import Success from "./pages/success";
 import Cart from "./components/Payment/Cart";
+import { PlaceOrder } from "./components/orders/placeOrder";
+import MyOrders from "./components/orders/MyOrders";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-    <Route path="/" element={<Layout />}>
-      <Route index element={<Home />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/cart" element={<Cart />} />
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/cart" element={<Cart />} />
 
-      {/* Protected Routes */}
+        {/* Protected Routes */}
+        <Route
+          path="/restaurants"
+          element={
+            <RequireAuth>
+              <RestaurantList />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/restaurant-dashboard"
+          element={
+            <RequireAuth>
+              <RestaurantDashboard />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/add-restaurant"
+          element={
+            <RequireAuth>
+              <AddRestaurant />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/restaurant/:id/menu-items"
+          element={
+            <RequireAuth>
+              <RestaurantMenuItems />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/restaurant/:id/menu-items/add"
+          element={
+            <RequireAuth>
+              <AddMenuItemPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/edit-restaurant/:id"
+          element={
+            <RequireAuth>
+              <EditRestaurant />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/restaurant/:id/menu-items/edit/:id"
+          element={
+            <RequireAuth>
+              <EditMenuItem />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/menuitems"
+          element={
+            <RequireAuth>
+              <MenuItems />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <RequireAuth>
+              <AdminUserManagement />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin/restaurants"
+          element={
+            <RequireAuth>
+              <AdminRestaurantManagement />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/restaurants/:id"
+          element={
+            <RequireAuth>
+              <RestaurantDetails />
+            </RequireAuth>
+          }
+        />
+      </Route>
       <Route
-        path="/restaurants"
-        element={
-          <RequireAuth>
-            <RestaurantList />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/restaurant-dashboard"
-        element={
-          <RequireAuth>
-            <RestaurantDashboard />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/add-restaurant"
-        element={
-          <RequireAuth>
-            <AddRestaurant />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/restaurant/:id/menu-items"
-        element={
-          <RequireAuth>
-            <RestaurantMenuItems />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/restaurant/:id/menu-items/add"
-        element={
-          <RequireAuth>
-            <AddMenuItemPage />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/edit-restaurant/:id"
-        element={
-          <RequireAuth>
-            <EditRestaurant />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/restaurant/:id/menu-items/edit/:id"
-        element={
-          <RequireAuth>
-            <EditMenuItem />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/menuitems"
-        element={
-          <RequireAuth>
-            <MenuItems />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/admin/users"
-        element={
-          <RequireAuth>
-            <AdminUserManagement />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/admin/restaurants"
-        element={
-          <RequireAuth>
-            <AdminRestaurantManagement />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/restaurants/:id"
-        element={
-          <RequireAuth>
-            <RestaurantDetails />
-          </RequireAuth>
-        }
-      />
-    </Route>
-     <Route
         path="/pre-order"
         element={
           <RequireAuth>
@@ -163,6 +165,10 @@ const router = createBrowserRouter(
           </RequireAuth>
         }
       />
+      <Route path="/place-order" element={<PlaceOrder />} />
+
+      <Route path="/my-orders" element={<MyOrders />} />
+      
     </>
   )
 );

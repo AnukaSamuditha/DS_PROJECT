@@ -12,7 +12,7 @@ services:
       - 5173:5173
 
     env_file:
-       - ./food_ordering_system/.env
+      - ./food_ordering_system/.env
 
     develop:
       watch:
@@ -86,6 +86,27 @@ services:
         - path: ./microservices/payment_service/.env
           target: /app
           action: sync
+
+  ordering_service:
+    build: ./microservices/ordering_service
+    container_name: ordering_service
+
+    ports:
+      - 5003:5003
+
+    env_file:
+      - ./microservices/ordering_service/.env
+
+    develop:
+     watch:
+      - path: ./microservices/ordering_service/package.json
+        action: rebuild
+      - path: ./microservices/ordering_service/package-lock.json
+        action: rebuild
+
+      - path: ./microservices/ordering_service/.env
+        target: /app
+        action: sync
   redis:
     image: redis:alpine
     container_name: redis

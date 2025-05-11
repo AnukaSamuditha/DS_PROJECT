@@ -514,9 +514,6 @@ export default function GoogleMapContainer({
     }
   };
 
-  //console.log("SINGLE RIDER LAT ", singleRiderInfo);
-  //console.log("SINGLE RIDER LNG ",singleRiderInfo);
-
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
