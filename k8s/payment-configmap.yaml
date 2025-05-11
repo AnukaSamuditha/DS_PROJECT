@@ -7,7 +7,5 @@ data:
  PORT: "5001"
  MONGO_DB_URL: "mongodb+srv://admin:YrpBxqtSEngp7Za8@restbackend.vfbr0.mongodb.net/?retryWrites=true&w=majority&appName=RESTBackend"
  JWT_SECRET: "SECRET_CODE"
- STRIPE_SECRET: "PLACEHOLDER"
- STRIPE_PUBLISHABLE_KEY: "PLACEHOLDER"
  VAPID_PUBLIC_KEY: "PLACEHOLDER"
  VAPID_PRIVATE_KEY: "PLACEHOLDER"

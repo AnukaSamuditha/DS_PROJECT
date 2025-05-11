@@ -8,4 +8,3 @@ data:
  MONGO_DB_URL: "mongodb+srv://admin:PWDLtqNoe2ld4Hjm@restbackend.vfbr0.mongodb.net/?retryWrites=true&w=majority&appName=RESTBackend"
  JWT_SECRET: "SECRET_CODE"
  FRONTEND_PREFIX: " http://localhost:5173"
- STRIPE_SECRET: "PLACEHOLDER"
