@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  VITE_GOOGLE_API: "AIzaSyB0bPZfruncVtxg48gts8qedK-O8phFodo"
+  VITE_MAP_ID: "aab7bf45901cb788"
+  VITE_DELIVERY_SERVICE_PREFIX: "http://localhost:5000"
+  VITE_PAYMENT_SERVICE_PREFIX: "http://localhost:5001"
+  VITE_RESTAURANT_SERVICE_PREFIX: "http://localhost:5002"
+  VITE_VAPID_PUBLIC_KEY: "BCCcTQkjgVuZN5E3VPeNB5TLg41TczbwEtQnLzNrhijzcVWFyNd-tHeDGvUv6JPI5vHwUwTozjKl9sNNboPTR_w"
